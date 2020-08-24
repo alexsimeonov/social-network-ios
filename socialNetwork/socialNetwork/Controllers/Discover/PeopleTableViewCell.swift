@@ -27,20 +27,14 @@ class PeopleTableViewCell: UITableViewCell, IdentifiedCell {
         super.setSelected(selected, animated: animated)
     }
     
-    @IBAction func followButtonTapped(_ sender: UIButton) {
-        guard let user = user else { return }
-        UsersManager.shared.follow(user: user) {
-            self.delegate?.updateView()
-        }
+    override func prepareForReuse() {
+        profilePictureView.image = nil
+        nameLabel.text = nil
+        profilePictureView.cancelImageLoad()
     }
     
-    func configure(item: User) {
-        DispatchQueue.main.async {
-            self.user = item
-            self.nameLabel.text = "\(item.firstName) \(item.lastName)"
-            self.profilePictureView.makeRounded()
-            guard let url = URL(string: item.profilePicURL) else { return }
-            self.profilePictureView.loadImage(from: url)
-        }
+    @IBAction func followButtonTapped(_ sender: UIButton) {
+        guard let user = user else { return }
+        self.delegate?.follow(user: user)
     }
 }

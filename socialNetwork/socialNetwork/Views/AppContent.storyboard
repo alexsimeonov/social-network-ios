@@ -588,12 +588,18 @@
                                             </label>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background" translatesAutoresizingMaskIntoConstraints="NO" id="cZ1-xh-xL6">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="150"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="backgroundPicture">
+                                                    <bool key="isElement" value="YES"/>
+                                                </accessibility>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="150" id="DkN-Ey-u6H"/>
                                                 </constraints>
                                             </imageView>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="Nz7-DN-l2P">
                                                 <rect key="frame" x="157" y="100" width="100" height="100"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="profilePicture">
+                                                    <bool key="isElement" value="YES"/>
+                                                </accessibility>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="100" id="7Ug-G6-nxQ"/>
                                                     <constraint firstAttribute="height" constant="100" id="oUw-hL-mzr"/>

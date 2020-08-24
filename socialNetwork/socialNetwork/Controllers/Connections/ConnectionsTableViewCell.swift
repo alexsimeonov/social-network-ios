@@ -26,10 +26,6 @@ class ConnectionsTableViewCell: UITableViewCell {
     
     @IBAction func unfollowButtonTapped(_ sender: UIButton) {
         guard let user = user else { return }
-        UsersManager.shared.unfollow(user: user) {
-            UsersManager.shared.loadLoggedUser() {
-                self.delegate?.delegate?.updateData()
-            }
-        }
+        self.delegate?.unfollow(user: user)
     }
 }

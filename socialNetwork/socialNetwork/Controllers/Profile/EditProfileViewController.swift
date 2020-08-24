@@ -88,53 +88,6 @@ extension EditProfileViewController: UIImagePickerControllerDelegate, UINavigati
     }
     
     @objc fileprivate func uploadPhoto(imageView: UIImageView) {
-        guard let image = imageView.image, let data = image.jpegData(compressionQuality: 1.0) else { return }
-        
-        let imageName = UUID().uuidString
-        
-        let imageRef = Storage.storage().reference().child("ImagesFolder").child(imageName)
-        
-        imageRef.putData(data, metadata: nil) { (metadata, error) in
-            if let err = error {
-                print(err.localizedDescription)
-                return
-            }
-            imageRef.downloadURL { (url, error) in
-                if let err = error {
-                    print(err.localizedDescription)
-                    return
-                }
-                
-                guard let url = url else { return }
-                let urlString = url.absoluteString
-                
-                let dataRef = Firestore.firestore().collection("images").document()
-                let documentUid = dataRef.documentID
-                
-                let data = [
-                    "uid": documentUid,
-                    "imageURL": urlString
-                ]
-                
-                dataRef.setData(data) { (error) in
-                    if let err = error {
-                        AlertManager.shared.presentAlert(title: "Error", message: err.localizedDescription, sender: self)
-                        return
-                    }
-                    
-                    UserDefaults.standard.set(documentUid, forKey: "uid")
-                    imageView.image = UIImage()
-                    
-                    switch imageView {
-                    case self.profilePictureImageView:
-                        UsersManager.shared.updateProfilePicture(pictureURL: urlString)
-                    case self.backgroundPictureImageView:
-                        UsersManager.shared.updateBackgroundPicture(pictureURL: urlString)
-                    default:
-                        break
-                    }
-                }
-            }
-        }
+        ImagesManager.shared.uploadPhoto(sender: self, imageView: imageView)
     }
 }

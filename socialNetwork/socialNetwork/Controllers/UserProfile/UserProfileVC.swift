@@ -9,26 +9,26 @@
 import UIKit
 
 class UserProfileVC: UIViewController {
-
+    
     @IBOutlet weak var backgroundView: UIImageView!
     @IBOutlet weak var profileView: UIImageView!
     @IBOutlet weak var connectionsCollection: UICollectionView!
     @IBOutlet weak var postsView: UITableView!
     @IBOutlet weak var nameLabel: UILabel!
-
+    
     var userId: String?
     var user: User?
     var posts: [Post]?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureData()
         configureProfile()
     }
-
+    
     func configureProfile() {
         guard let id = self.userId else { return }
-
+        
         UsersManager.shared.getUserById(id) { user in
             self.user = user
             self.navigationItem.title = "\(user.firstName) \(user.lastName)"
@@ -42,7 +42,7 @@ class UserProfileVC: UIViewController {
             self.postsView.reloadData()
         }
     }
-
+    
     func configureProfilePicture(user: User) {
         profileView.makeRounded()
         profileView.layer.borderWidth = 2
@@ -50,7 +50,7 @@ class UserProfileVC: UIViewController {
         guard let url = URL(string: user.profilePicURL) else { return }
         self.profileView.loadImage(from: url)
     }
-
+    
     func configureBackgroundPicture(user: User) {
         guard let url = URL(string: user.backgroundPicURL) else { return }
         self.backgroundView.loadImage(from: url)
@@ -132,22 +132,22 @@ extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
         guard let posts = posts else { return cell}
         let post = posts[indexPath.row]
         cell.delegate = self
-           DispatchQueue.main.async {
-                    cell.resetCellDefaultData()
-                    cell.id = post.id
-                    cell.post = post
-                    UsersManager.shared.getUserById(post.userId) { (user) in
-                        cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
-                        guard let url = URL(string: user.profilePicURL) else { return }
-                        cell.profilePictureView.loadImage(from: url)
-                    }
-                    let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-                    cell.timeStampLabel.text = date
-                    cell.profilePictureView.makeRounded()
-                    cell.postContentView.text = post.content
-                    cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
-                    cell.updateLike()
-                }
+        DispatchQueue.main.async {
+            cell.resetCellDefaultData()
+            cell.id = post.id
+            cell.post = post
+            UsersManager.shared.getUserById(post.userId) { (user) in
+                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
+                guard let url = URL(string: user.profilePicURL) else { return }
+                cell.profilePictureView.loadImage(from: url)
+            }
+            let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
+            cell.timeStampLabel.text = date
+            cell.profilePictureView.makeRounded()
+            cell.postContentView.text = post.content
+            cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
+            cell.updateLike()
+        }
         return cell
     }
     

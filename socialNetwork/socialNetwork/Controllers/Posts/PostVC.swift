@@ -40,26 +40,6 @@ class PostVC: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        self.commentsView.removeObserver(self, forKeyPath: "contentSize")
-    }
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        if keyPath == "contentSize" {
-            if object is UITableView {
-                if let newValue = change?[.newKey] {
-                    let newSize = newValue as! CGSize
-                    self.commentsViewHC.constant = newSize.height
-                }
-            }
-        }
-    }
-    
     func configurePostView() {
         guard let post = post else { return }
         self.postTextView.text = post.content
@@ -91,6 +71,28 @@ class PostVC: UIViewController {
             let writeCommentPage = navigation.topViewController as! WriteCommentVC
             writeCommentPage.postId = self.post?.id
             writeCommentPage.delegate = self
+        }
+    }
+    
+    // MARK: - InfiniteTalbeView
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.commentsView.removeObserver(self, forKeyPath: "contentSize")
+    }
+    
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey : Any]?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        if keyPath == "contentSize" {
+            if object is UITableView {
+                if let newValue = change?[.newKey] {
+                    let newSize = newValue as! CGSize
+                    self.commentsViewHC.constant = newSize.height
+                }
+            }
         }
     }
 }

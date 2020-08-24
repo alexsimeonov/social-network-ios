@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+import FirebaseFirestore
 
 class SignUpViewController: UIViewController {
     @IBOutlet weak var firstNameField: UITextField!

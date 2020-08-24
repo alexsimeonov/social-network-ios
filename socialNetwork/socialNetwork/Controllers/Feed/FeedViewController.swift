@@ -77,9 +77,7 @@ class FeedViewController: UIViewController {
 
 extension FeedViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-//        for indexPath in indexPaths {
-//
-//        }
+        
     }
 }
 
@@ -94,6 +92,7 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCe
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
         let post = posts[indexPath.row]
         cell.delegate = self
+        cell.profilePictureView.cancelImageLoad()
         DispatchQueue.main.async {
             cell.resetCellDefaultData()
             cell.id = post.id
@@ -140,7 +139,12 @@ extension FeedViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Story", for: indexPath) as! StoryViewCell
-        cell.configure(index: indexPath.row)
+        guard let loggedUser = UsersManager.shared.loggedUser else { return cell }
+        UsersManager.shared.getUserById(loggedUser.following[indexPath.row]) { user in
+            cell.storyProfilePictureView.makeRounded()
+            guard let url = URL(string: user.profilePicURL) else { return }
+            cell.storyProfilePictureView.loadImage(from: url)
+        }
         
         return cell
     }

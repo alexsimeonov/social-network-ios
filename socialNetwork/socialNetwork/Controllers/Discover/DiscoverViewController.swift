@@ -98,7 +98,14 @@ class DiscoverViewController: UIViewController {
                 data: users.filter() { $0.id != AuthManager.shared.userId && !loggedUser.following.contains( $0.id )},
                 configure: { (cell, item) in
                     cell.delegate = self
-                    cell.configure(item: item)
+                    
+                    DispatchQueue.main.async {
+                        cell.user = item
+                        cell.nameLabel.text = "\(item.firstName) \(item.lastName)"
+                        cell.profilePictureView.makeRounded()
+                        guard let url = URL(string: item.profilePicURL) else { return }
+                        cell.profilePictureView.loadImage(from: url)
+                    }
             },
                 selectionHandler: { user in
                     print(user)
@@ -111,7 +118,17 @@ class DiscoverViewController: UIViewController {
                 data: news,
                 configure: { (cell, item) in
                     cell.delegate = self
-                    cell.configure(item: item)
+                    guard let dateString = item.publishedAt,
+                        let source = item.source.name,
+                        let urlString = item.urlToImage,
+                        let url = URL(string: urlString) else { return }
+                    
+                    let date = DateManager.shared.formatDateExtended(from: dateString)
+                    cell.newsImageView.loadImage(from: url)
+                    cell.setArticle(article: item)
+                    cell.titleLabel.text = item.title
+                    cell.sourceLabel.text = "\(source) | \(date)"
+                    cell.descriptionLabel.text = item.description
             },
                 selectionHandler: { new in
                     guard let url = URL(string: new.url) else { return }
@@ -170,5 +187,15 @@ extension DiscoverViewController: NewsCellDelegate {
     func shareArticle(url: String) {
         self.url = url
         performSegue(withIdentifier: "shareNews", sender: self)
+    }
+}
+
+// MARK: - PeopleCellDelegate
+
+extension DiscoverViewController {
+    func follow(user: User) {
+        UsersManager.shared.follow(user: user) {
+            self.updateView()
+        }
     }
 }

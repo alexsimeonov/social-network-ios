@@ -32,6 +32,7 @@
 		3185CD7324DAC26700E759D4 /* WritePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3185CD7224DAC26700E759D4 /* WritePostViewController.swift */; };
 		3185CD7524DAD2E100E759D4 /* PostsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3185CD7424DAD2E100E759D4 /* PostsManager.swift */; };
 		3185CD7724DAEF9C00E759D4 /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3185CD7624DAEF9C00E759D4 /* PostCell.swift */; };
+		3186A8AF24F398D900FF2D77 /* ImagesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3186A8AE24F398D900FF2D77 /* ImagesManager.swift */; };
 		3189170624D7E75100FCC98C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3189170524D7E75100FCC98C /* AppDelegate.swift */; };
 		3189170824D7E75100FCC98C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3189170724D7E75100FCC98C /* SceneDelegate.swift */; };
 		3189170D24D7E75100FCC98C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3189170B24D7E75100FCC98C /* Main.storyboard */; };
@@ -77,6 +78,7 @@
 		3185CD7224DAC26700E759D4 /* WritePostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WritePostViewController.swift; sourceTree = "<group>"; };
 		3185CD7424DAD2E100E759D4 /* PostsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsManager.swift; sourceTree = "<group>"; };
 		3185CD7624DAEF9C00E759D4 /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
+		3186A8AE24F398D900FF2D77 /* ImagesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesManager.swift; sourceTree = "<group>"; };
 		3189170224D7E75100FCC98C /* socialNetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = socialNetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3189170524D7E75100FCC98C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3189170724D7E75100FCC98C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -243,6 +245,14 @@
 			path = Comments;
 			sourceTree = "<group>";
 		};
+		3186A8AD24F398C100FF2D77 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				3186A8AE24F398D900FF2D77 /* ImagesManager.swift */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		318916F924D7E75100FCC98C = {
 			isa = PBXGroup;
 			children = (
@@ -305,6 +315,7 @@
 		31D1E0C224D8013A00D3222B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3186A8AD24F398C100FF2D77 /* Images */,
 				311FCA4124EE86DC00B58437 /* Posts */,
 				311FCA4424EE870600B58437 /* Common */,
 				311FCA4324EE86FB00B58437 /* News */,
@@ -480,6 +491,7 @@
 				3189171024D7E75100FCC98C /* socialNetwork.xcdatamodeld in Sources */,
 				314504EC24DA8CF200B1DA69 /* WelcomePageViewController.swift in Sources */,
 				3189172024D7F1F300FCC98C /* SignUpViewController.swift in Sources */,
+				3186A8AF24F398D900FF2D77 /* ImagesManager.swift in Sources */,
 				31D1E0CF24D83E9C00D3222B /* EditProfileViewController.swift in Sources */,
 				31289B0D24D99E49003564D3 /* TabBarViewController.swift in Sources */,
 				3193CAB824EFDF3E00A3B863 /* DateManager.swift in Sources */,

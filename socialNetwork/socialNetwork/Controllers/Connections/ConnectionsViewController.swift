@@ -44,6 +44,14 @@ class ConnectionsViewController: UIViewController {
             
             return cell
         }
+        
+        func unfollow(user: User) {
+            UsersManager.shared.unfollow(user: user) {
+                UsersManager.shared.loadLoggedUser() {
+                    self.delegate?.updateData()
+                }
+            }
+        }
     }
     
     @IBOutlet weak var connectionsSegmentedControl: UISegmentedControl!

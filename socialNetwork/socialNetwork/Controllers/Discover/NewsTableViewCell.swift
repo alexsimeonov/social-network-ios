@@ -20,7 +20,6 @@ class NewsTableViewCell: UITableViewCell, IdentifiedCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var sourceLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    var onReuse: () -> Void = {}
     var delegate: NewsCellDelegate?
     var article: News!
     
@@ -43,19 +42,5 @@ class NewsTableViewCell: UITableViewCell, IdentifiedCell {
     
     @IBAction func shareButtonTapped(_ sender: UIButton) {
         delegate?.shareArticle(url: self.article.url)
-    }
-    
-    func configure(item: News) {
-        guard let dateString = item.publishedAt,
-            let source = item.source.name,
-            let urlString = item.urlToImage,
-            let url = URL(string: urlString) else { return }
-
-        let date = DateManager.shared.formatDateExtended(from: dateString)
-        self.newsImageView.loadImage(from: url)
-        self.setArticle(article: item)
-        self.titleLabel.text = item.title
-        self.sourceLabel.text = "\(source) | \(date)"
-        self.descriptionLabel.text = item.description
     }
 }

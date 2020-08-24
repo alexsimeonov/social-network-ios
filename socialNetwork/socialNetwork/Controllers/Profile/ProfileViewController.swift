@@ -38,8 +38,9 @@ class ProfileViewController: UIViewController {
         postsView.dataSource = self
         resizeActivityTableView()
         configureProfilePicture()
-        refreshProfile() { }
-        postsView.reloadData()
+        refreshProfile() {
+            self.postsView.reloadData()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
