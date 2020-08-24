@@ -276,7 +276,7 @@
 			children = (
 				313DC6BC24EEC56D00BCA21E /* Extensions */,
 				31D1E0C724D808BE00D3222B /* Views */,
-				31D1E0C224D8013A00D3222B /* Model */,
+				31D1E0C224D8013A00D3222B /* Models */,
 				3189171E24D7F1C200FCC98C /* Controllers */,
 				3189170524D7E75100FCC98C /* AppDelegate.swift */,
 				3189170724D7E75100FCC98C /* SceneDelegate.swift */,
@@ -312,7 +312,7 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		31D1E0C224D8013A00D3222B /* Model */ = {
+		31D1E0C224D8013A00D3222B /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				3186A8AD24F398C100FF2D77 /* Images */,
@@ -321,7 +321,7 @@
 				311FCA4324EE86FB00B58437 /* News */,
 				311FCA4024EE86CD00B58437 /* Users */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		31D1E0C724D808BE00D3222B /* Views */ = {

@@ -75,6 +75,12 @@ class FeedViewController: UIViewController {
 // MARK: - TableViewDataSource -> PostsTableView
 
 extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCellDelegate {
+    
+    func showComments(post: Post) {
+        self.selectedPost = post
+        performSegue(withIdentifier: "postPage", sender: self)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }

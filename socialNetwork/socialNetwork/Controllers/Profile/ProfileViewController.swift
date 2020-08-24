@@ -212,6 +212,10 @@ extension ProfileViewController {
 // MARK: - PostsTableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
+    func showComments(post: Post) {
+        //
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }
@@ -233,7 +237,6 @@ extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
             cell.profilePictureView.makeRounded()
             cell.postContentView.text = post.content
             cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
-            cell.updateLike()
         }
         return cell
     }

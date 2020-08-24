@@ -67,8 +67,7 @@ class PostVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "writeComment" {
-            let navigation = segue.destination as! UINavigationController
-            let writeCommentPage = navigation.topViewController as! WriteCommentVC
+            let writeCommentPage = segue.destination as! WriteCommentVC
             writeCommentPage.postId = self.post?.id
             writeCommentPage.delegate = self
         }
@@ -95,6 +94,16 @@ class PostVC: UIViewController {
             }
         }
     }
+    
+    func likePost(with id: String, completion: @escaping () -> () ) {
+        PostsManager.shared.likePost(postId: id) { (post, res) in
+            completion()
+        }
+    }
+    
+    func reloadData() {
+        self.commentsView.reloadData()
+    }
 }
 
 // MARK: - TableViewDataSource
@@ -106,10 +115,9 @@ extension PostVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "commentCell", for: indexPath) as! CommentCell
-         
+        
         DispatchQueue.main.async {
             let currentComment = self.comments[indexPath.row]
-            
             UsersManager.shared.getUserById(currentComment.userId) { (user) in
                 cell.profilePicView.makeRounded()
                 guard let url = URL(string: user.profilePicURL) else { return }

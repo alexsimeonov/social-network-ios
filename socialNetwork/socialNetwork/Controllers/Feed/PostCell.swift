@@ -10,6 +10,7 @@ import UIKit
 
 protocol PostCellDelegate {
     func reloadData()
+    func showComments(post: Post)
 }
 
 class PostCell: UITableViewCell {
@@ -34,10 +35,10 @@ class PostCell: UITableViewCell {
     override func prepareForReuse() {
         self.profilePictureView.cancelImageLoad()
         self.profilePictureView.image = UIImage(named: "avatar")
-        self.nameLabel.text = nil
-        self.timeStampLabel.text = nil
-        self.postContentView.text = nil
-        self.likeButton?.titleLabel?.text = nil
+        self.nameLabel.text = ""
+        self.timeStampLabel.text = ""
+        self.postContentView.text = ""
+        self.likeButton?.titleLabel?.text = ""
     }
     
     @IBAction func moreButtonTapped(_ sender: UIButton) {
@@ -45,25 +46,26 @@ class PostCell: UITableViewCell {
     }
     
     @IBAction func likeButtonTapped(_ sender: UIButton) {
-        guard let id = self.id else { return }
-        PostsManager.shared.likePost(postId: id) { (post, res) in
-            self.delegate?.reloadData()
-        }
+        print("like")
     }
     
     @IBAction func commentButtonTapped(_ sender: UIButton) {
         print("Display Post page")
+        // its nil, have to think of something
+        guard let post = self.post else { return }
+        print(post)
+        self.delegate?.showComments(post: post)
     }
     
     func updateLike() {
         let image: UIImage?
-        guard let post = self.post else { return }
+        guard let post = post else { return }
         if post.likes.contains(AuthManager.shared.userId) {
             image = UIImage(systemName: "hand.thumbsup.fill")
         } else {
             image = UIImage(systemName: "hand.thumbsup")
         }
-        self.likeButton?.titleLabel?.text = "(\(post.likes.count))"
         self.likeButton?.setImage(image, for: .normal)
+        self.delegate?.reloadData()
     }
 }

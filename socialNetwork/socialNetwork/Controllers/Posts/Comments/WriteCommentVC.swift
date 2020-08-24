@@ -37,9 +37,9 @@ class WriteCommentVC: UIViewController {
         if commentContent.text != "Write a comment" {
             guard let user = UsersManager.shared.loggedUser, let postId = self.postId else { return }
             CommentsManager.shared.createComment(userId: user.id, postId: postId, content: commentContent.text) {
-                self.dismiss(animated: true) {
-                    self.delegate?.commentsView.reloadData()
-                }
+                self.delegate?.reloadData()
+                self.navigationController?.popViewController(animated: true)
+                
             }
         }
     }

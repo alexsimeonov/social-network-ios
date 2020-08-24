@@ -122,6 +122,10 @@ extension UserProfileVC: UICollectionViewDataSource, UICollectionViewDelegateFlo
 // MARK: - PostsTableViewDataSource
 
 extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
+    func showComments(post: Post) {
+        //
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let posts = posts else { return 0 }
         return posts.count
@@ -145,7 +149,6 @@ extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
             cell.profilePictureView.makeRounded()
             cell.postContentView.text = post.content
             cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
-            cell.updateLike()
         }
         return cell
     }
