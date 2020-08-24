@@ -28,7 +28,7 @@ class PeopleTableViewCell: UITableViewCell, IdentifiedCell {
     }
     
     override func prepareForReuse() {
-        profilePictureView.image = nil
+        profilePictureView.image = UIImage(named: "avatar")
         nameLabel.text = nil
         profilePictureView.cancelImageLoad()
     }

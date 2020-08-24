@@ -133,7 +133,6 @@ extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
         let post = posts[indexPath.row]
         cell.delegate = self
         DispatchQueue.main.async {
-            cell.resetCellDefaultData()
             cell.id = post.id
             cell.post = post
             UsersManager.shared.getUserById(post.userId) { (user) in

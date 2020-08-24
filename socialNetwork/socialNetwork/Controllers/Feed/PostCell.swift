@@ -31,6 +31,15 @@ class PostCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    override func prepareForReuse() {
+        self.profilePictureView.cancelImageLoad()
+        self.profilePictureView.image = UIImage(named: "avatar")
+        self.nameLabel.text = nil
+        self.timeStampLabel.text = nil
+        self.postContentView.text = nil
+        self.likeButton?.titleLabel?.text = nil
+    }
+    
     @IBAction func moreButtonTapped(_ sender: UIButton) {
         print("Should display additional actions")
     }
@@ -44,14 +53,6 @@ class PostCell: UITableViewCell {
     
     @IBAction func commentButtonTapped(_ sender: UIButton) {
         print("Display Post page")
-    }
-    
-    func resetCellDefaultData() {
-        self.nameLabel.text = nil
-        self.profilePictureView.image = nil
-        self.timeStampLabel.text = nil
-        self.likeButton?.titleLabel?.text = nil
-        self.postContentView.text = nil
     }
     
     func updateLike() {

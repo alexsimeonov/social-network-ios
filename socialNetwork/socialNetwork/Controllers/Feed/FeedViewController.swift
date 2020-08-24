@@ -51,7 +51,6 @@ class FeedViewController: UIViewController {
     func configurePosts() {
         postsView.dataSource = self
         postsView.delegate = self
-        postsView.prefetchDataSource = self
     }
     
     func configureStories() {
@@ -60,24 +59,16 @@ class FeedViewController: UIViewController {
     }
     
     func populatePostsTable() {
-        UsersManager.shared.loadLoggedUser() { }
-        DispatchQueue.main.async {
-            PostsManager.shared.getFollowingPosts() { (followingPosts) in
-                PostsManager.shared.getLoggedUserPosts() { (userPosts) in
-                    self.posts = (followingPosts + userPosts)
-                        .sorted() { $0.dateCreated > $1.dateCreated }
-                    self.postsView.reloadData()
-                }
+        PostsManager.shared.getFollowingPosts() { (followingPosts) in
+            self.posts = followingPosts
+        }
+        PostsManager.shared.getLoggedUserPosts() { (userPosts) in
+            DispatchQueue.main.async {
+                self.posts = (self.posts + userPosts)
+                    .sorted() { $0.dateCreated > $1.dateCreated }
+                self.reloadData()
             }
         }
-    }
-}
-
-// MARK: - TableViewPrefetch
-
-extension FeedViewController: UITableViewDataSourcePrefetching {
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
     }
 }
 
@@ -90,25 +81,19 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCe
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
-        let post = posts[indexPath.row]
         cell.delegate = self
-        cell.profilePictureView.cancelImageLoad()
-        DispatchQueue.main.async {
-            cell.resetCellDefaultData()
-            cell.id = post.id
-            cell.post = post
-            UsersManager.shared.getUserById(post.userId) { (user) in
+        let post = posts[indexPath.row]
+        UsersManager.shared.getUserById(post.userId) { (user) in
+            DispatchQueue.main.async {
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
+                cell.timeStampLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
+                cell.postContentView.text = post.content
+                cell.profilePictureView.makeRounded()
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
             }
-            let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-            cell.timeStampLabel.text = date
-            cell.profilePictureView.makeRounded()
-            cell.postContentView.text = post.content
-            cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
-            cell.updateLike()
         }
+        
         return cell
     }
     

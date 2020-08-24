@@ -44,34 +44,28 @@ class UsersManager {
     }
     
     func loadLoggedUser(completion: @escaping () -> ()) {
-        DispatchQueue.main.async {
-            
-            let userRef = self.usersRef.document(AuthManager.shared.userId)
-            
-            userRef.getDocument { (document, error) in
-                let result = Result {
-                    guard let data = document?.data() else { return }
-                    UsersManager.shared.loggedUser = try JSONDecoder()
-                        .decode(User.self, from: JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
-                    completion()
-                }
+        let userRef = self.usersRef.document(AuthManager.shared.userId)
+        userRef.getDocument { (document, error) in
+            let result = Result {
+                guard let data = document?.data() else { return }
+                UsersManager.shared.loggedUser = try JSONDecoder()
+                    .decode(User.self, from: JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
+                completion()
             }
         }
     }
     
     func getAllUsers(completion: @escaping ([User]) -> ()) {
-        DispatchQueue.main.async {
-            self.usersRef.getDocuments { (users, error) in
-                if let err = error {
-                    print(err.localizedDescription)
-                } else {
-                    guard let users = users else { return }
-                    let jsonDecoder = JSONDecoder()
-                    UsersManager.shared.users = users.documents.map() {
-                        try! jsonDecoder
-                            .decode(User.self, from: JSONSerialization.data(withJSONObject: $0.data(), options: .prettyPrinted)) }
-                    completion(UsersManager.shared.users)
-                }
+        self.usersRef.getDocuments { (users, error) in
+            if let err = error {
+                print(err.localizedDescription)
+            } else {
+                guard let users = users else { return }
+                let jsonDecoder = JSONDecoder()
+                UsersManager.shared.users = users.documents.map() {
+                    try! jsonDecoder
+                        .decode(User.self, from: JSONSerialization.data(withJSONObject: $0.data(), options: .prettyPrinted)) }
+                completion(UsersManager.shared.users)
             }
         }
     }
