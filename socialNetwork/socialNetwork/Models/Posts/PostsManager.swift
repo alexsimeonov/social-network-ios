@@ -136,7 +136,6 @@ class PostsManager {
             do {
                 guard let post = try document?.data(as: Post.self)! else { return }
                 if post.likes.contains(AuthManager.shared.userId) {
-                    print("already liked")
                     self.postsRef.document(postId).updateData([
                         "likes": FieldValue.arrayRemove([AuthManager.shared.userId])
                     ])

@@ -20,6 +20,7 @@
 		31289B0D24D99E49003564D3 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31289B0C24D99E49003564D3 /* TabBarViewController.swift */; };
 		31289B1124D9B2DD003564D3 /* AppContent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31289B1024D9B2DD003564D3 /* AppContent.storyboard */; };
 		313DC6BE24EEC5AE00BCA21E /* UIImageView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313DC6BD24EEC5AE00BCA21E /* UIImageView+Ext.swift */; };
+		313FE42C24F51B98000C78DC /* UIButton+UpdateImg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313FE42B24F51B98000C78DC /* UIButton+UpdateImg.swift */; };
 		314504EC24DA8CF200B1DA69 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314504EB24DA8CF200B1DA69 /* WelcomePageViewController.swift */; };
 		3154EF3024ED3463003CEE92 /* UserProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3154EF2F24ED3463003CEE92 /* UserProfileVC.swift */; };
 		3154EF3324ED6565003CEE92 /* PostVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3154EF3224ED6565003CEE92 /* PostVC.swift */; };
@@ -66,6 +67,7 @@
 		31289B0C24D99E49003564D3 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		31289B1024D9B2DD003564D3 /* AppContent.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AppContent.storyboard; sourceTree = "<group>"; };
 		313DC6BD24EEC5AE00BCA21E /* UIImageView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Ext.swift"; sourceTree = "<group>"; };
+		313FE42B24F51B98000C78DC /* UIButton+UpdateImg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+UpdateImg.swift"; sourceTree = "<group>"; };
 		314504EB24DA8CF200B1DA69 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		3154EF2F24ED3463003CEE92 /* UserProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileVC.swift; sourceTree = "<group>"; };
 		3154EF3224ED6565003CEE92 /* PostVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostVC.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				313DC6BD24EEC5AE00BCA21E /* UIImageView+Ext.swift */,
+				313FE42B24F51B98000C78DC /* UIButton+UpdateImg.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -480,6 +483,7 @@
 				31E6DC0B24E1951A00E8EE4C /* DiscoverViewController.swift in Sources */,
 				31565F2824E13E3800F6F10F /* NewsManager.swift in Sources */,
 				31289AE224D95980003564D3 /* ConnectionsTableViewCell.swift in Sources */,
+				313FE42C24F51B98000C78DC /* UIButton+UpdateImg.swift in Sources */,
 				311621BC24DDAAC40067851C /* NewsTableViewCell.swift in Sources */,
 				3166107F24E69DA800BCEC77 /* AlertManager.swift in Sources */,
 				31D1E0CB24D821FD00D3222B /* ProfileViewController.swift in Sources */,

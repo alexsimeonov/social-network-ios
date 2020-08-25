@@ -212,6 +212,12 @@ extension ProfileViewController {
 // MARK: - PostsTableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { post, didFollow  in
+            completion(post, didFollow)
+        }
+    }
+    
     func showComments(post: Post) {
         //
     }
@@ -227,17 +233,19 @@ extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
         DispatchQueue.main.async {
             cell.id = post.id
             cell.post = post
-            UsersManager.shared.getUserById(post.userId) { (user) in
+            cell.profilePictureView.makeRounded()
+            let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
+            cell.timeStampLabel.text = date
+            cell.postContentView.text = post.content
+            cell.likesLabel.text = "\(post.likes.count) likes"
+            UsersManager.shared.loadLoggedUser() {
+                guard let user = UsersManager.shared.loggedUser else { return }
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
             }
-            let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-            cell.timeStampLabel.text = date
-            cell.profilePictureView.makeRounded()
-            cell.postContentView.text = post.content
-            cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
         }
+        
         return cell
     }
     

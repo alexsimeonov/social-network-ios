@@ -41,6 +41,7 @@ class FeedViewController: UIViewController {
             target: nil,
             action: nil
         )
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .compose,
             target: self,
@@ -62,6 +63,7 @@ class FeedViewController: UIViewController {
         PostsManager.shared.getFollowingPosts() { (followingPosts) in
             self.posts = followingPosts
         }
+        
         PostsManager.shared.getLoggedUserPosts() { (userPosts) in
             DispatchQueue.main.async {
                 self.posts = (self.posts + userPosts)
@@ -75,6 +77,11 @@ class FeedViewController: UIViewController {
 // MARK: - TableViewDataSource -> PostsTableView
 
 extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCellDelegate {
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { post, didFollow  in
+            completion(post, didFollow)
+        }
+    }
     
     func showComments(post: Post) {
         self.selectedPost = post
@@ -89,12 +96,15 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCe
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
         cell.delegate = self
         let post = posts[indexPath.row]
+        cell.post = post
         UsersManager.shared.getUserById(post.userId) { (user) in
             DispatchQueue.main.async {
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
                 cell.timeStampLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
                 cell.postContentView.text = post.content
                 cell.profilePictureView.makeRounded()
+                cell.likeButton.updateLikeImage(cell: cell)
+                cell.likesLabel.text = "\(post.likes.count) likes"
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
             }

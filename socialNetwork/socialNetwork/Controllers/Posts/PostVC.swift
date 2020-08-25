@@ -17,6 +17,8 @@ class PostVC: UIViewController {
     @IBOutlet weak var postAuthorNameLabel: UILabel!
     @IBOutlet weak var createdAtLabel: UILabel!
     @IBOutlet weak var authorProfilePicView: UIImageView!
+    @IBOutlet weak var likesLabel: UILabel!
+    @IBOutlet weak var likeButton: UIButton!
     
     var post: Post?
     var comments = [Comment]()
@@ -30,6 +32,7 @@ class PostVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.configurePostView()
         self.commentsView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         guard let post = self.post else { return }
         CommentsManager.shared.getCommentsForPost(postId: post.id) { (comments) in
@@ -37,6 +40,13 @@ class PostVC: UIViewController {
                 self.comments = comments
                 self.commentsView.reloadData()
             }
+        }
+    }
+    
+    @IBAction func likePostTapped(_ sender: UIButton) {
+        guard let post = self.post else { return }
+        PostsManager.shared.likePost(postId: post.id) { post, didFollow  in
+            self.configurePostView()
         }
     }
     
@@ -50,6 +60,8 @@ class PostVC: UIViewController {
             self.authorProfilePicView.loadImage(from: url)
             self.postAuthorNameLabel.text = "\(user.firstName) \(user.lastName)"
             self.createdAtLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
+            self.likesLabel.text = "\(post.likes.count) likes"
+            self.likeButton.updateLikeImage(post: post, sender: self)
         }
     }
     

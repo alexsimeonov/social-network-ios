@@ -122,8 +122,15 @@ extension UserProfileVC: UICollectionViewDataSource, UICollectionViewDelegateFlo
 // MARK: - PostsTableViewDataSource
 
 extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
+    
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { post, didFollow  in
+            completion(post, didFollow)
+        }
+    }
+    
     func showComments(post: Post) {
-        //
+        // implement showing post page
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -148,7 +155,8 @@ extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
             cell.timeStampLabel.text = date
             cell.profilePictureView.makeRounded()
             cell.postContentView.text = post.content
-            cell.likeButton?.titleLabel?.text = "(\(post.likes.count))"
+            cell.likesLabel.text = "\(post.likes.count) likes"
+            cell.likeButton.updateLikeImage(cell: cell)
         }
         return cell
     }

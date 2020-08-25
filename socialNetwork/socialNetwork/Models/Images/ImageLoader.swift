@@ -8,7 +8,7 @@
 
 import UIKit
 
-var imageCache = [String: UIImage]()
+var imageCache = NSCache<AnyObject, AnyObject>()
 
 class ImageLoader {
     private var loadedImages = [URL: UIImage]()
@@ -61,21 +61,28 @@ class UIImageLoader {
     
     func load(from url: URL, for imageView: UIImageView) {
         
-        let token = imageLoader.loadImage(from: url) { result in
-            defer { self.uuidMap.removeValue(forKey: imageView) }
-            do {
-                let image = try result.get()
-                DispatchQueue.main.async {
-                    imageView.image = image
-                }
-            } catch {
-                print(error.localizedDescription)
+        if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage {
+            DispatchQueue.main.async {
+                imageView.image = imageFromCache
+                return
             }
         }
-        
-        if let token = token {
-            uuidMap[imageView] = token
-        }
+            
+            let token = imageLoader.loadImage(from: url) { result in
+                defer { self.uuidMap.removeValue(forKey: imageView) }
+                do {
+                    let image = try result.get()
+                    DispatchQueue.main.async {
+                        imageView.image = image
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            if let token = token {
+                uuidMap[imageView] = token
+            }
     }
     
     func cancel(for imageView: UIImageView) {

@@ -11,6 +11,7 @@ import UIKit
 protocol PostCellDelegate {
     func reloadData()
     func showComments(post: Post)
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ())
 }
 
 class PostCell: UITableViewCell {
@@ -20,6 +21,7 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var postContentView: UITextView!
     @IBOutlet weak var timeStampLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var likesLabel: UILabel!
     var delegate: PostCellDelegate?
     var id: String?
     var post: Post?
@@ -38,7 +40,7 @@ class PostCell: UITableViewCell {
         self.nameLabel.text = ""
         self.timeStampLabel.text = ""
         self.postContentView.text = ""
-        self.likeButton?.titleLabel?.text = ""
+        self.likesLabel.text = "likes"
     }
     
     @IBAction func moreButtonTapped(_ sender: UIButton) {
@@ -46,26 +48,17 @@ class PostCell: UITableViewCell {
     }
     
     @IBAction func likeButtonTapped(_ sender: UIButton) {
-        print("like")
+        guard let post = post else { return }
+        self.delegate?.likePost(with: post.id) { post, didFollow in
+            self.likeButton.updateLikeImage(cell: self)
+            self.delegate?.reloadData()
+        }
     }
     
     @IBAction func commentButtonTapped(_ sender: UIButton) {
         print("Display Post page")
-        // its nil, have to think of something
         guard let post = self.post else { return }
         print(post)
         self.delegate?.showComments(post: post)
-    }
-    
-    func updateLike() {
-        let image: UIImage?
-        guard let post = post else { return }
-        if post.likes.contains(AuthManager.shared.userId) {
-            image = UIImage(systemName: "hand.thumbsup.fill")
-        } else {
-            image = UIImage(systemName: "hand.thumbsup")
-        }
-        self.likeButton?.setImage(image, for: .normal)
-        self.delegate?.reloadData()
     }
 }
