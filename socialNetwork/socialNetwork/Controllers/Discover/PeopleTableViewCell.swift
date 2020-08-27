@@ -27,14 +27,14 @@ class PeopleTableViewCell: UITableViewCell, IdentifiedCell {
         super.setSelected(selected, animated: animated)
     }
     
+    @IBAction func followButtonTapped(_ sender: UIButton) {
+        guard let user = user else { return }
+        self.delegate?.follow(user: user)
+    }
+    
     override func prepareForReuse() {
         profilePictureView.image = UIImage(named: "avatar")
         nameLabel.text = nil
         profilePictureView.cancelImageLoad()
-    }
-    
-    @IBAction func followButtonTapped(_ sender: UIButton) {
-        guard let user = user else { return }
-        self.delegate?.follow(user: user)
     }
 }

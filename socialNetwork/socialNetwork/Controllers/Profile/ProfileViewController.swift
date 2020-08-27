@@ -15,15 +15,17 @@ protocol EditProfileViewControllerDelegate {
 
 class ProfileViewController: UIViewController {
     
-    var user: User?
     @IBOutlet weak var profilePictureView: UIImageView!
     @IBOutlet weak var backgroundPictureView: UIImageView!
     @IBOutlet weak var postsView: UITableView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var activityViewHeight: NSLayoutConstraint!
     @IBOutlet weak var connectionsCollectionView: UICollectionView!
-    var posts = [Post]()
-    var selectedUserId: String?
+    
+    private var user: User?
+    private var posts = [Post]()
+    private var selectedUserId: String?
+    private var selectedPost: Post?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,27 +54,42 @@ class ProfileViewController: UIViewController {
     }
     
     func refreshProfile(completion: @escaping () -> ()) {
-        UsersManager.shared.loadLoggedUser() {
+        UsersManager.shared.loadLoggedUser() { [weak self] in
             guard let user = UsersManager.shared.loggedUser else { return }
             if let profilePicURL = URL(string: user.profilePicURL) {
-                self.profilePictureView.loadImage(from: profilePicURL)
+                self?.profilePictureView.loadImage(from: profilePicURL)
             }
             if let backgroundPicURL = URL(string: user.backgroundPicURL) {
-                self.backgroundPictureView.loadImage(from: backgroundPicURL)
+                self?.backgroundPictureView.loadImage(from: backgroundPicURL)
             }
-            self.nameLabel.text = "\(user.firstName) \(user.lastName)"
-            self.connectionsCollectionView.reloadData()
+            self?.nameLabel.text = "\(user.firstName) \(user.lastName)"
+            self?.connectionsCollectionView.reloadData()
             completion()
         }
     }
     
-    func refreshActivity() {
-        PostsManager.shared.getLoggedUserPosts() { (userPosts) in
+    private func refreshActivity() {
+        PostsManager.shared.getLoggedUserPosts() { [weak self] (userPosts) in
             DispatchQueue.main.async {
-                self.posts = userPosts
-                self.postsView.reloadData()
+                self?.posts = userPosts
+                self?.postsView.reloadData()
             }
         }
+    }
+    
+    private func configureNavigation() {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Logout",
+            style: .done,
+            target: self,
+            action: #selector(self.logout)
+        )
+    }
+    
+    private func configureProfilePicture() {
+        profilePictureView.makeRounded()
+        profilePictureView.layer.borderWidth = 2
+        profilePictureView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -87,27 +104,17 @@ class ProfileViewController: UIViewController {
                 viewController.userId = id
             }
         }
+        if segue.identifier == "postPage" {
+            if let viewController = segue.destination as? PostVC {
+                guard let post = self.selectedPost else { return }
+                viewController.post = post
+            }
+        }
     }
     
-    func configureNavigation() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "Logout",
-            style: .done,
-            target: self,
-            action: #selector(self.logout)
-        )
-    }
-    
-    func configureProfilePicture() {
-        profilePictureView.makeRounded()
-        profilePictureView.layer.borderWidth = 2
-        profilePictureView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-    }
-    
-    @objc func logout() {
-        DispatchQueue.main.async {
-            AuthManager.shared.logout()
-            self.performSegue(withIdentifier: "logout", sender: nil)
+    @objc private func logout() {
+        AuthManager.shared.logout() {
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
         }
     }
 }
@@ -211,16 +218,7 @@ extension ProfileViewController {
 
 // MARK: - PostsTableViewDataSource
 
-extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
-    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
-        PostsManager.shared.likePost(postId: id) { post, didFollow  in
-            completion(post, didFollow)
-        }
-    }
-    
-    func showComments(post: Post) {
-        //
-    }
+extension ProfileViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
@@ -238,6 +236,7 @@ extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
             cell.timeStampLabel.text = date
             cell.postContentView.text = post.content
             cell.likesLabel.text = "\(post.likes.count) likes"
+            cell.likeButton.updateLikeImage(cell: cell)
             UsersManager.shared.loadLoggedUser() {
                 guard let user = UsersManager.shared.loggedUser else { return }
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
@@ -247,6 +246,21 @@ extension ProfileViewController: UITableViewDataSource, PostCellDelegate {
         }
         
         return cell
+    }
+}
+
+// MARK: - PostCellDelegate
+
+extension ProfileViewController: PostCellDelegate {
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { post, didFollow  in
+            completion(post, didFollow)
+        }
+    }
+    
+    func showComments(post: Post) {
+        self.selectedPost = post
+        performSegue(withIdentifier: "postPage", sender: self)
     }
     
     func reloadData() {

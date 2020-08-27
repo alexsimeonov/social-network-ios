@@ -13,7 +13,7 @@ import FirebaseAuth
 class AuthManager {
     
     static let shared = AuthManager()
-    var userId = ""
+    private(set) var userId = ""
     
     private init() { }
     
@@ -27,7 +27,7 @@ class AuthManager {
         Auth.auth().createUser(
         withEmail: email,
         password: password
-        ) { authResult, error in
+        ) { (authResult, error) in
             if let err = error {
                 print(err.localizedDescription)
             } else {
@@ -62,7 +62,7 @@ class AuthManager {
                     message: "\(err.localizedDescription)",
                     preferredStyle: UIAlertController.Style.alert
                 )
-                alert.addAction(UIAlertAction(title: "Click", style: UIAlertAction.Style.default, handler: nil))
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
                 sender.present(alert, animated: true, completion: nil)
                 print(err.localizedDescription)
             } else {
@@ -75,10 +75,11 @@ class AuthManager {
         }
     }
     
-    func logout() {
+    func logout(completion: @escaping () -> ()) {
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()
+            completion()
         } catch let signOutError as NSError {
             print ("Error signing out: %@", signOutError)
         }

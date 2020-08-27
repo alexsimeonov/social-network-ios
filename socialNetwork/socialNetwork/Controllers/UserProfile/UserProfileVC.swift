@@ -19,6 +19,7 @@ class UserProfileVC: UIViewController {
     var userId: String?
     var user: User?
     var posts: [Post]?
+    var selectedPost: Post?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,24 +27,24 @@ class UserProfileVC: UIViewController {
         configureProfile()
     }
     
-    func configureProfile() {
+    private func configureProfile() {
         guard let id = self.userId else { return }
         
-        UsersManager.shared.getUserById(id) { user in
-            self.user = user
-            self.navigationItem.title = "\(user.firstName) \(user.lastName)"
-            self.nameLabel.text = "\(user.firstName) \(user.lastName)"
-            self.configureProfilePicture(user: user)
-            self.configureBackgroundPicture(user: user)
-            self.connectionsCollection.reloadData()
+        UsersManager.shared.getUserById(id) { [weak self] user in
+            self?.user = user
+            self?.navigationItem.title = "\(user.firstName) \(user.lastName)"
+            self?.nameLabel.text = "\(user.firstName) \(user.lastName)"
+            self?.configureProfilePicture(user: user)
+            self?.configureBackgroundPicture(user: user)
+            self?.connectionsCollection.reloadData()
         }
-        PostsManager.shared.getPostsById(userId: id) { posts in
-            self.posts = posts
-            self.postsView.reloadData()
+        PostsManager.shared.getPostsById(userId: id) { [weak self] posts in
+            self?.posts = posts
+            self?.postsView.reloadData()
         }
     }
     
-    func configureProfilePicture(user: User) {
+    private func configureProfilePicture(user: User) {
         profileView.makeRounded()
         profileView.layer.borderWidth = 2
         profileView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
@@ -51,15 +52,24 @@ class UserProfileVC: UIViewController {
         self.profileView.loadImage(from: url)
     }
     
-    func configureBackgroundPicture(user: User) {
+    private func configureBackgroundPicture(user: User) {
         guard let url = URL(string: user.backgroundPicURL) else { return }
         self.backgroundView.loadImage(from: url)
     }
     
-    func configureData() {
+    private func configureData() {
         postsView.dataSource = self
         connectionsCollection.dataSource = self
         connectionsCollection.delegate = self
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "postPage" {
+            if let viewController = segue.destination as? PostVC {
+                guard let post = self.selectedPost else { return }
+                viewController.post = post
+            }
+        }
     }
 }
 
@@ -121,17 +131,7 @@ extension UserProfileVC: UICollectionViewDataSource, UICollectionViewDelegateFlo
 
 // MARK: - PostsTableViewDataSource
 
-extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
-    
-    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
-        PostsManager.shared.likePost(postId: id) { post, didFollow  in
-            completion(post, didFollow)
-        }
-    }
-    
-    func showComments(post: Post) {
-        // implement showing post page
-    }
+extension UserProfileVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let posts = posts else { return 0 }
@@ -159,6 +159,21 @@ extension UserProfileVC: UITableViewDataSource, PostCellDelegate {
             cell.likeButton.updateLikeImage(cell: cell)
         }
         return cell
+    }
+}
+
+// MARK: - PostCellDelegate
+
+extension UserProfileVC: PostCellDelegate {
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { (post, didFollow)  in
+            completion(post, didFollow)
+        }
+    }
+    
+    func showComments(post: Post) {
+        self.selectedPost = post
+        performSegue(withIdentifier: "postPage", sender: self)
     }
     
     func reloadData() {

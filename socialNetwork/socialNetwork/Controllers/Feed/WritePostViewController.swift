@@ -38,7 +38,15 @@ class WritePostViewController: UIViewController {
         }
     }
     
-    func prepareView() {
+    @IBAction func postButtonTapped(_ sender: UIBarButtonItem) {
+        PostsManager.shared.createPost(
+            userId: AuthManager.shared.userId,
+            content: postContentField.text!
+        )
+        navigationController?.popViewController(animated: true)
+    }
+    
+    private func prepareView() {
         postContentField.delegate = self
         profilePictureView.image = UIImage(named: "avatar")
         profilePictureView.makeRounded()
@@ -51,14 +59,6 @@ class WritePostViewController: UIViewController {
             postContentField.text = "Write what's on your mind..."
             postContentField.textColor = UIColor.lightGray
         }
-    }
-    
-    @IBAction func postButtonTapped(_ sender: UIBarButtonItem) {
-        PostsManager.shared.createPost(
-            userId: AuthManager.shared.userId,
-            content: postContentField.text!
-        )
-        navigationController?.popViewController(animated: true)
     }
 }
 

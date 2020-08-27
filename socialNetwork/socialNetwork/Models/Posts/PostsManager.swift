@@ -15,13 +15,13 @@ class PostsManager {
     
     private init() { }
     
-    let postsRef = Firestore.firestore().collection("posts")
-    let loggedUserPostsRef = Firestore.firestore().collection("posts")
+    private let postsRef = Firestore.firestore().collection("posts")
+    private let loggedUserPostsRef = Firestore.firestore().collection("posts")
         .whereField("userId", isEqualTo: AuthManager.shared.userId )
-    var posts = [Post]()
-    var loggedUserPosts = [Post]()
-    var followingPosts = [Post]()
-    var feedPosts = [Post]()
+    private var posts = [Post]()
+    private var loggedUserPosts = [Post]()
+    private var followingPosts = [Post]()
+    private var feedPosts = [Post]()
     
     func createPost(
         userId: String,
@@ -46,7 +46,8 @@ class PostsManager {
     }
     
     func getPosts(completion: @escaping (_ result: [Post]) -> ()) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.postsRef.getDocuments() { (posts, error) in
                 guard let posts = posts else {
                     guard let err = error else { return }
@@ -86,7 +87,8 @@ class PostsManager {
     }
     
     func getLoggedUserPosts(completion: @escaping (_ result: [Post]) -> ()){
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.loggedUserPostsRef.getDocuments() { (posts, error) in
                 guard let posts = posts else {
                     guard let err = error else { return }
@@ -108,10 +110,11 @@ class PostsManager {
     func getFollowingPosts(completion: @escaping (_ result: [Post]) -> ()) {
         guard let loggedUser = UsersManager.shared.loggedUser else { return }
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             if loggedUser.following.count > 0 {
                 self.postsRef.whereField("userId", in: loggedUser.following)
-                    .getDocuments() { results, error in
+                    .getDocuments() { (results, error) in
                         
                         guard let posts = results else {
                             print(error?.localizedDescription ?? "")
@@ -132,7 +135,8 @@ class PostsManager {
     }
     
     func likePost(postId: String, completion: @escaping(Post, Bool) -> ()) {
-        postsRef.document(postId).getDocument() { document, error in
+        postsRef.document(postId).getDocument() { [weak self] (document, error) in
+            guard let self = self else { return }
             do {
                 guard let post = try document?.data(as: Post.self)! else { return }
                 if post.likes.contains(AuthManager.shared.userId) {
@@ -149,6 +153,17 @@ class PostsManager {
             } catch {
                 print(error.localizedDescription)
             }
+        }
+    }
+    
+    func deletePost(withId id: String, completion: @escaping () -> ()) {
+        postsRef.document(id).delete() { err in
+            guard let err = err
+                else {
+                    completion()
+                    return
+                }
+            print(err) 
         }
     }
 }

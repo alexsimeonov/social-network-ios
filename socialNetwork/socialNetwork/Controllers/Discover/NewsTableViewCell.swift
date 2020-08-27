@@ -13,15 +13,16 @@ protocol NewsCellDelegate {
 }
 
 class NewsTableViewCell: UITableViewCell, IdentifiedCell {
-    
-    static var identifier = "newsCell"
-    
+        
     @IBOutlet weak var newsImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var sourceLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
+    
+    static var identifier = "newsCell"
+
     var delegate: NewsCellDelegate?
-    var article: News!
+    private var article: News!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -36,11 +37,11 @@ class NewsTableViewCell: UITableViewCell, IdentifiedCell {
         super.setSelected(selected, animated: animated)
     }
     
-    func setArticle(article: News) {
-        self.article = article
-    }
-    
     @IBAction func shareButtonTapped(_ sender: UIButton) {
         delegate?.shareArticle(url: self.article.url)
+    }
+    
+    func setArticle(article: News) {
+        self.article = article
     }
 }

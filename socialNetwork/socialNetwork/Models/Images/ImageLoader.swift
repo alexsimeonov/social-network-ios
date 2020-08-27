@@ -23,11 +23,11 @@ class ImageLoader {
         
         let uuid = UUID()
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            defer { self.runningRequests.removeValue(forKey: uuid) }
+        let task = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+            defer { self?.runningRequests.removeValue(forKey: uuid) }
             
             if let data = data, let image = UIImage(data: data) {
-                self.loadedImages[url] = image
+                self?.loadedImages[url] = image
                 completion(.success(image))
                 return
             }
@@ -68,8 +68,8 @@ class UIImageLoader {
             }
         }
             
-            let token = imageLoader.loadImage(from: url) { result in
-                defer { self.uuidMap.removeValue(forKey: imageView) }
+            let token = imageLoader.loadImage(from: url) { [weak self] (result) in
+                defer { self?.uuidMap.removeValue(forKey: imageView) }
                 do {
                     let image = try result.get()
                     DispatchQueue.main.async {

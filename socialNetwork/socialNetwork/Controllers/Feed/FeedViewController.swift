@@ -13,8 +13,9 @@ class FeedViewController: UIViewController {
     
     @IBOutlet weak var postsView: UITableView!
     @IBOutlet weak var storiesCollectionView: UICollectionView!
-    var posts = [Post]()
-    var selectedPost: Post?
+    private var posts = [Post]()
+    private var selectedPost: Post?
+    private let blackView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,13 +30,13 @@ class FeedViewController: UIViewController {
         storiesCollectionView.reloadData()
     }
     
-    @objc func writePost() {
+    @objc private func writePost() {
         self.performSegue(withIdentifier: "toWritePost", sender: nil)
     }
     
     // MARK: - Configure
     
-    func configureNavigation() {
+    private func configureNavigation() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .camera,
             target: nil,
@@ -49,22 +50,23 @@ class FeedViewController: UIViewController {
         )
     }
     
-    func configurePosts() {
+    private func configurePosts() {
         postsView.dataSource = self
         postsView.delegate = self
     }
     
-    func configureStories() {
+    private func configureStories() {
         storiesCollectionView.dataSource = self
         storiesCollectionView.delegate = self
     }
     
-    func populatePostsTable() {
-        PostsManager.shared.getFollowingPosts() { (followingPosts) in
-            self.posts = followingPosts
+    private func populatePostsTable() {
+        PostsManager.shared.getFollowingPosts() { [weak self] (followingPosts) in
+            self?.posts = followingPosts
         }
         
-        PostsManager.shared.getLoggedUserPosts() { (userPosts) in
+        PostsManager.shared.getLoggedUserPosts() { [weak self] (userPosts) in
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 self.posts = (self.posts + userPosts)
                     .sorted() { $0.dateCreated > $1.dateCreated }
@@ -72,21 +74,16 @@ class FeedViewController: UIViewController {
             }
         }
     }
+    
+    func handleMore(postId: String) {
+        SettingsLauncher.shared.delegate = self
+        SettingsLauncher.shared.showSettings(view: self.view, postId: postId)
+    }
 }
 
 // MARK: - TableViewDataSource -> PostsTableView
 
-extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCellDelegate {
-    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
-        PostsManager.shared.likePost(postId: id) { post, didFollow  in
-            completion(post, didFollow)
-        }
-    }
-    
-    func showComments(post: Post) {
-        self.selectedPost = post
-        performSegue(withIdentifier: "postPage", sender: self)
-    }
+extension FeedViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
@@ -99,6 +96,7 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCe
         cell.post = post
         UsersManager.shared.getUserById(post.userId) { (user) in
             DispatchQueue.main.async {
+                cell.moreButton.isHidden = user.id != AuthManager.shared.userId
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
                 cell.timeStampLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
                 cell.postContentView.text = post.content
@@ -124,6 +122,21 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate, PostCe
             postPage.post = self.selectedPost
         }
     }
+}
+
+// MARK: - PostCellDelegate
+
+extension FeedViewController: PostCellDelegate {
+    func likePost(with id: String, completion: @escaping (Post, Bool) -> ()) {
+        PostsManager.shared.likePost(postId: id) { (post, didFollow)  in
+            completion(post, didFollow)
+        }
+    }
+    
+    func showComments(post: Post) {
+        self.selectedPost = post
+        performSegue(withIdentifier: "postPage", sender: self)
+    }
     
     func reloadData() {
         self.postsView.reloadData()
@@ -141,7 +154,7 @@ extension FeedViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Story", for: indexPath) as! StoryViewCell
         guard let loggedUser = UsersManager.shared.loggedUser else { return cell }
-        UsersManager.shared.getUserById(loggedUser.following[indexPath.row]) { user in
+        UsersManager.shared.getUserById(loggedUser.following[indexPath.row]) { (user) in
             cell.storyProfilePictureView.makeRounded()
             guard let url = URL(string: user.profilePicURL) else { return }
             cell.storyProfilePictureView.loadImage(from: url)

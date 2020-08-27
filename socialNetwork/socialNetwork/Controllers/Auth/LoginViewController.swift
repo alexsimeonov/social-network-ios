@@ -9,15 +9,13 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-        
+    
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
     
-    @IBAction func loginButtonTapped(_ sender: UIButton) {
-        guard let email = emailField.text, let password = passwordField.text else { return }
-        DispatchQueue.main.async {
-            AuthManager.shared.login(email: email, password: password, sender: self)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -25,8 +23,10 @@ class LoginViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+    @IBAction func loginButtonTapped(_ sender: UIButton) {
+        guard let email = emailField.text, let password = passwordField.text else { return }
+        DispatchQueue.main.async {
+            AuthManager.shared.login(email: email, password: password, sender: self)
+        }
     }
 }

@@ -27,10 +27,10 @@ class ConnectionsViewController: UIViewController {
             let cell = tableView
                 .dequeueReusableCell(withIdentifier: "connectionCell", for: indexPath) as! ConnectionsTableViewCell
             
-            UsersManager.shared.getUserById(data[indexPath.row]) { (user) in
+            UsersManager.shared.getUserById(data[indexPath.row]) { [weak self] (user) in
                 cell.delegate = self
                 cell.user = user
-                cell.unfollowButton.isHidden = self.delegate?.connectionsSegmentedControl.selectedSegmentIndex == 1
+                cell.unfollowButton.isHidden = self?.delegate?.connectionsSegmentedControl.selectedSegmentIndex == 1
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
                 if user.profilePicURL == "" {
                     cell.profilePictureView.image = UIImage(named: "avatar")
@@ -47,8 +47,8 @@ class ConnectionsViewController: UIViewController {
         
         func unfollow(user: User) {
             UsersManager.shared.unfollow(user: user) {
-                UsersManager.shared.loadLoggedUser() {
-                    self.delegate?.updateData()
+                UsersManager.shared.loadLoggedUser() { [weak self] in
+                    self?.delegate?.updateData()
                 }
             }
         }
@@ -56,9 +56,9 @@ class ConnectionsViewController: UIViewController {
     
     @IBOutlet weak var connectionsSegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableViewToDisplay: UITableView!
-    var dataSources = [DataSource]()
-    var dataCell: ConnectionsTableViewCell?
-    var selectedUserId: String?
+    private var dataSources = [DataSource]()
+    private var dataCell: ConnectionsTableViewCell?
+    private var selectedUserId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,21 +66,15 @@ class ConnectionsViewController: UIViewController {
         tableViewToDisplay.delegate = self
     }
     
-    @objc func handleSegmentChange(_ sender: UISegmentedControl) {
-        DispatchQueue.main.async {
-            self.tableViewToDisplay.dataSource = self.dataSources[sender.selectedSegmentIndex]
-            self.tableViewToDisplay.reloadData()
-        }
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
-        DispatchQueue.main.async {
-            self.updateData()
+        DispatchQueue.main.async { [weak self] in
+            self?.updateData()
         }
     }
     
-    func updateData() {
-        UsersManager.shared.getUserById(AuthManager.shared.userId) { (user) in
+    private func updateData() {
+        UsersManager.shared.getUserById(AuthManager.shared.userId) { [weak self] (user) in
+            guard let self = self else { return }
             if self.dataSources.count >= self.connectionsSegmentedControl.numberOfSegments {
                 self.dataSources[0].data = user.following
                 self.dataSources[1].data = user.followers
@@ -89,7 +83,7 @@ class ConnectionsViewController: UIViewController {
         }
     }
     
-    func configureData() {
+    private func configureData() {
         guard let user = UsersManager.shared.loggedUser else { return }
         
         connectionsSegmentedControl.isHidden = false
@@ -107,6 +101,13 @@ class ConnectionsViewController: UIViewController {
         connectionsSegmentedControl.selectedSegmentIndex = 0
         handleSegmentChange(connectionsSegmentedControl)
         connectionsSegmentedControl.addTarget(self, action: #selector(handleSegmentChange), for: .valueChanged)
+    }
+    
+    @objc private func handleSegmentChange(_ sender: UISegmentedControl) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableViewToDisplay.dataSource = self?.dataSources[sender.selectedSegmentIndex]
+            self?.tableViewToDisplay.reloadData()
+        }
     }
 }
 // MARK: - TableViewDelegate

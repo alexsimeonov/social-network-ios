@@ -61,23 +61,13 @@ class DiscoverViewController: UIViewController {
     @IBOutlet weak var discoverSegmentControl: UISegmentedControl!
     @IBOutlet weak var peopleSearchBar: UISearchBar!
     
-    
-    var url: String = ""
-    var selectedUserId: String?
-    var data = [UITableViewDataSource & SegmentTitle & UITableViewDelegate]()
+    private var url: String = ""
+    private var selectedUserId: String?
+    private var data = [UITableViewDataSource & SegmentTitle & UITableViewDelegate]()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateView()
-    }
-    
-    func updateView() {
-        if discoverSegmentControl.selectedSegmentIndex == 0 {
-            UsersManager.shared.loadLoggedUser() {
-                self.loadDataSources()
-                self.discoverViewTable.reloadData()
-            }
-        }
     }
     
     @IBAction func segmentSwitched(_ sender: UISegmentedControl) {
@@ -86,7 +76,16 @@ class DiscoverViewController: UIViewController {
         discoverViewTable.reloadData()
     }
     
-    func loadDataSources() {
+    private func updateView() {
+        if discoverSegmentControl.selectedSegmentIndex == 0 {
+            UsersManager.shared.loadLoggedUser() { [weak self] in
+                self?.loadDataSources()
+                self?.discoverViewTable.reloadData()
+            }
+        }
+    }
+    
+    private func loadDataSources() {
         var users: [User]?
         var news: [News]?
         
@@ -107,7 +106,7 @@ class DiscoverViewController: UIViewController {
                         cell.profilePictureView.loadImage(from: url)
                     }
             },
-                selectionHandler: { user in
+                selectionHandler: { (user) in
                     print(user)
                     self?.selectedUserId = user.id
                     self?.performSegue(withIdentifier: "userProfile", sender: self)
@@ -116,7 +115,7 @@ class DiscoverViewController: UIViewController {
             let newsDataSource = DataSource<News, NewsTableViewCell>(
                 title: "News",
                 data: news,
-                configure: { (cell, item) in
+                configure: { [weak self] (cell, item) in
                     cell.delegate = self
                     guard let dateString = item.publishedAt,
                         let source = item.source.name,
@@ -130,7 +129,7 @@ class DiscoverViewController: UIViewController {
                     cell.sourceLabel.text = "\(source) | \(date)"
                     cell.descriptionLabel.text = item.description
             },
-                selectionHandler: { new in
+                selectionHandler: { (new) in
                     guard let url = URL(string: new.url) else { return }
                     self?.showSafariVC(for: url)
             })
@@ -153,14 +152,14 @@ class DiscoverViewController: UIViewController {
         }
     }
     
-    func setupSegmentedControl() {
+    private func setupSegmentedControl() {
         discoverSegmentControl.isHidden = data.isEmpty
         discoverSegmentControl.removeAllSegments()
     }
     
     // MARK: - SafariVC (show browser tab through the app)
     
-    func showSafariVC(for url: URL) {
+    private func showSafariVC(for url: URL) {
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
     }

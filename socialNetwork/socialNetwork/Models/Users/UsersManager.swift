@@ -15,9 +15,9 @@ class UsersManager {
     
     private init() { }
     
-    var users = [User]()
-    var loggedUser: User?
-    let usersRef = Firestore.firestore().collection("users")
+    private var users = [User]()
+    private(set) var loggedUser: User?
+    private let usersRef = Firestore.firestore().collection("users")
     
     func createUser(
         firstName: String,
@@ -46,7 +46,7 @@ class UsersManager {
     func loadLoggedUser(completion: @escaping () -> ()) {
         let userRef = self.usersRef.document(AuthManager.shared.userId)
         userRef.getDocument { (document, error) in
-            let result = Result {
+            _ = Result {
                 guard let data = document?.data() else { return }
                 UsersManager.shared.loggedUser = try JSONDecoder()
                     .decode(User.self, from: JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
@@ -73,7 +73,7 @@ class UsersManager {
     func getUserById(_ id: String, completion: @escaping (User) -> ()) {
         let userRef = self.usersRef.document(id)
         userRef.getDocument { (document, error) in
-            let result = Result {
+            _ = Result {
                 guard let data = document?.data() else { return }
                 let user = try JSONDecoder()
                     .decode(User.self, from: JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
@@ -81,7 +81,7 @@ class UsersManager {
             }
         }
     }
-    
+
     func follow(user: User, completion: @escaping () -> ()) {
         usersRef.document(user.id).updateData([
             "followers": FieldValue.arrayUnion([AuthManager.shared.userId])

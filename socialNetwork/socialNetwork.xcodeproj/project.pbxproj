@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		11F68B352E4E85B702E73855 /* Pods_socialNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D41D0FF201FF7E08D865D5F /* Pods_socialNetwork.framework */; };
+		3102186724F7E1C000D59EE2 /* SettingsLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3102186624F7E1C000D59EE2 /* SettingsLauncher.swift */; };
 		31092C5924DC27DE000233F9 /* StoryViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31092C5824DC27DE000233F9 /* StoryViewCell.swift */; };
 		311621B324DD2C1E0067851C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311621B224DD2C1E0067851C /* User.swift */; };
 		311621B524DD2C290067851C /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311621B424DD2C290067851C /* Post.swift */; };
@@ -55,6 +56,7 @@
 
 /* Begin PBXFileReference section */
 		1D41D0FF201FF7E08D865D5F /* Pods_socialNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_socialNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3102186624F7E1C000D59EE2 /* SettingsLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLauncher.swift; sourceTree = "<group>"; };
 		31092C5824DC27DE000233F9 /* StoryViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewCell.swift; sourceTree = "<group>"; };
 		311621B224DD2C1E0067851C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		311621B424DD2C290067851C /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
@@ -116,6 +118,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3102186524F7E1A900D59EE2 /* MoreSettings */ = {
+			isa = PBXGroup;
+			children = (
+				3102186624F7E1C000D59EE2 /* SettingsLauncher.swift */,
+			);
+			path = MoreSettings;
+			sourceTree = "<group>";
+		};
 		311621B824DDA7430067851C /* Discover */ = {
 			isa = PBXGroup;
 			children = (
@@ -204,9 +214,9 @@
 		31289AE624D96869003564D3 /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				3102186524F7E1A900D59EE2 /* MoreSettings */,
 				31D1E0C824D818A300D3222B /* FeedViewController.swift */,
 				3185CD7224DAC26700E759D4 /* WritePostViewController.swift */,
-				3185CD7624DAEF9C00E759D4 /* PostCell.swift */,
 				31092C5824DC27DE000233F9 /* StoryViewCell.swift */,
 			);
 			path = Feed;
@@ -233,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				3154EF3424ED737E003CEE92 /* Comments */,
+				3185CD7624DAEF9C00E759D4 /* PostCell.swift */,
 				3154EF3224ED6565003CEE92 /* PostVC.swift */,
 			);
 			path = Posts;
@@ -500,6 +511,7 @@
 				31289B0D24D99E49003564D3 /* TabBarViewController.swift in Sources */,
 				3193CAB824EFDF3E00A3B863 /* DateManager.swift in Sources */,
 				3154EF3024ED3463003CEE92 /* UserProfileVC.swift in Sources */,
+				3102186724F7E1C000D59EE2 /* SettingsLauncher.swift in Sources */,
 				311621B724DD80640067851C /* ConnectionsCollectionCell.swift in Sources */,
 				3154EF3324ED6565003CEE92 /* PostVC.swift in Sources */,
 				31D1E0C424D8014600D3222B /* UsersManager.swift in Sources */,

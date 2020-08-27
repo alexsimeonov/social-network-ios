@@ -10,27 +10,16 @@ import UIKit
 
 class WriteCommentVC: UIViewController {
     
-    var postId: String?
-    var delegate: PostVC?
-    
     @IBOutlet weak var profilePicView: UIImageView!
     @IBOutlet weak var commentContent: UITextView!
     @IBOutlet weak var nameLabel: UILabel!
     
+    var postId: String?
+    var delegate: PostVC?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
-    }
-    
-    func configureView() {
-        guard let user = UsersManager.shared.loggedUser else  { return }
-        self.nameLabel.text = "\(user.firstName) \(user.lastName)"
-        self.profilePicView.makeRounded()
-        self.commentContent.delegate = self
-        commentContent.text = "Write a comment"
-        commentContent.textColor = UIColor.lightGray
-        guard let url = URL(string: user.profilePicURL) else { return }
-        self.profilePicView.loadImage(from: url)
     }
     
     @IBAction func writeCommentTapped(_ sender: UIBarButtonItem) {
@@ -42,6 +31,17 @@ class WriteCommentVC: UIViewController {
                 
             }
         }
+    }
+    
+    private func configureView() {
+        guard let user = UsersManager.shared.loggedUser else  { return }
+        self.nameLabel.text = "\(user.firstName) \(user.lastName)"
+        self.profilePicView.makeRounded()
+        self.commentContent.delegate = self
+        commentContent.text = "Write a comment"
+        commentContent.textColor = UIColor.lightGray
+        guard let url = URL(string: user.profilePicURL) else { return }
+        self.profilePicView.loadImage(from: url)
     }
 }
 

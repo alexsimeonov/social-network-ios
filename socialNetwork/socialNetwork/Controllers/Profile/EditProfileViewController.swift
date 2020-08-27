@@ -22,7 +22,7 @@ class EditProfileViewController: UIViewController {
     
     var delegate: ProfileViewController?
     var user: User?
-    var lastClicked: UIButton?
+    private var lastClicked: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +56,7 @@ class EditProfileViewController: UIViewController {
         showImagePickerController()
     }
     
-    func configureUser() {
+    private func configureUser() {
         user = UsersManager.shared.loggedUser
         guard let user = user else { return }
         firstNameField.text = user.firstName
@@ -64,6 +64,8 @@ class EditProfileViewController: UIViewController {
         profilePictureImageView.makeRounded()
     }
 }
+
+// MARK: - UIImagePickerDelegate & UINavigationControllerDelegate
 
 extension EditProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     

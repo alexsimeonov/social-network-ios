@@ -22,6 +22,8 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var timeStampLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var likesLabel: UILabel!
+    @IBOutlet weak var moreButton: UIButton!
+    
     var delegate: PostCellDelegate?
     var id: String?
     var post: Post?
@@ -34,6 +36,25 @@ class PostCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    @IBAction func moreButtonTapped(_ sender: UIButton) {
+        print("Should display additional actions")
+        guard let post = self.post else { return }
+        (self.delegate as! FeedViewController).handleMore(postId: post.id)
+    }
+    
+    @IBAction func likeButtonTapped(_ sender: UIButton) {
+        guard let post = post else { return }
+        self.delegate?.likePost(with: post.id) { [weak self] (post, didFollow) in
+            self?.likeButton.updateLikeImage(cell: self)
+            self?.delegate?.reloadData()
+        }
+    }
+    
+    @IBAction func commentButtonTapped(_ sender: UIButton) {
+        guard let post = self.post else { return }
+        self.delegate?.showComments(post: post)
+    }
+    
     override func prepareForReuse() {
         self.profilePictureView.cancelImageLoad()
         self.profilePictureView.image = UIImage(named: "avatar")
@@ -41,24 +62,5 @@ class PostCell: UITableViewCell {
         self.timeStampLabel.text = ""
         self.postContentView.text = ""
         self.likesLabel.text = "likes"
-    }
-    
-    @IBAction func moreButtonTapped(_ sender: UIButton) {
-        print("Should display additional actions")
-    }
-    
-    @IBAction func likeButtonTapped(_ sender: UIButton) {
-        guard let post = post else { return }
-        self.delegate?.likePost(with: post.id) { post, didFollow in
-            self.likeButton.updateLikeImage(cell: self)
-            self.delegate?.reloadData()
-        }
-    }
-    
-    @IBAction func commentButtonTapped(_ sender: UIButton) {
-        print("Display Post page")
-        guard let post = self.post else { return }
-        print(post)
-        self.delegate?.showComments(post: post)
     }
 }

@@ -21,7 +21,7 @@ final class NewsManager {
         
         guard let url = URL(string: urlString) else { return }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, res, err) in
+        let task = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
             defer { completion() }
             guard let data = data else {
                 guard let err = err else { return }
@@ -31,7 +31,7 @@ final class NewsManager {
             
             let decoder = JSONDecoder()
             if let json = try? decoder.decode(Articles.self,  from: data) {
-                self.news = json.articles
+                self?.news = json.articles
             }
         }
         task.resume()

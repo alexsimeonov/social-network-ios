@@ -35,28 +35,36 @@ class PostVC: UIViewController {
         self.configurePostView()
         self.commentsView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         guard let post = self.post else { return }
-        CommentsManager.shared.getCommentsForPost(postId: post.id) { (comments) in
+        CommentsManager.shared.getCommentsForPost(postId: post.id) { [weak self] (comments) in
             DispatchQueue.main.async {
-                self.comments = comments
-                self.commentsView.reloadData()
+                self?.comments = comments
+                self?.commentsView.reloadData()
             }
         }
     }
     
     @IBAction func likePostTapped(_ sender: UIButton) {
         guard let post = self.post else { return }
-        PostsManager.shared.likePost(postId: post.id) { post, didFollow  in
-            self.configurePostView()
+        PostsManager.shared.likePost(postId: post.id) { [weak self] (post, didFollow)  in
+            self?.configurePostView()
         }
     }
     
-    func configurePostView() {
+    private func configureNavbar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .compose,
+            target: self,
+            action: #selector(writeComment)
+        )
+    }
+    
+    private func configurePostView() {
         guard let post = post else { return }
         self.postTextView.text = post.content
         postTextViewHC.constant = self.postTextView.contentSize.height
         self.authorProfilePicView.makeRounded()
-        UsersManager.shared.getUserById(post.userId) { (user) in
-            guard let url = URL(string: user.profilePicURL) else { return }
+        UsersManager.shared.getUserById(post.userId) { [weak self] (user) in
+            guard let self = self, let url = URL(string: user.profilePicURL) else { return }
             self.authorProfilePicView.loadImage(from: url)
             self.postAuthorNameLabel.text = "\(user.firstName) \(user.lastName)"
             self.createdAtLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
@@ -65,15 +73,7 @@ class PostVC: UIViewController {
         }
     }
     
-    func configureNavbar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .compose,
-            target: self,
-            action: #selector(writeComment)
-        )
-    }
-    
-    @objc func writeComment() {
+    @objc private func writeComment() {
         performSegue(withIdentifier: "writeComment", sender: nil)
     }
     
