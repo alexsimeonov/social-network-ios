@@ -8,8 +8,13 @@
 
 import UIKit
 
-class SettingsLauncher: NSObject {
-    static let shared = SettingsLauncher()
+protocol PostOptionsLauncherDelegate {
+    func reloadData()
+    func handleMore(postId: String)
+}
+
+class PostOptionsLauncher: NSObject {
+    static let shared = PostOptionsLauncher()
     
     private override init() {
         super.init()
@@ -21,7 +26,7 @@ class SettingsLauncher: NSObject {
         settingsMenu.backgroundColor = .white
         return settingsMenu
     }()
-    var delegate: FeedViewController?
+    var delegate: PostOptionsLauncherDelegate?
     private var postId = ""
     
     func showSettings(view: UIView, postId: String) {
@@ -96,8 +101,8 @@ class SettingsLauncher: NSObject {
     
     @objc func delete() {
         PostsManager.shared.deletePost(withId: self.postId) {
-            self.handleDismiss()
             self.delegate?.reloadData()
+            self.handleDismiss()
         }
     }
     

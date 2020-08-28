@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class FeedViewController: UIViewController {
+class FeedViewController: UIViewController, PostOptionsLauncherDelegate {
     
     @IBOutlet weak var postsView: UITableView!
     @IBOutlet weak var storiesCollectionView: UICollectionView!
@@ -70,14 +70,14 @@ class FeedViewController: UIViewController {
             DispatchQueue.main.async {
                 self.posts = (self.posts + userPosts)
                     .sorted() { $0.dateCreated > $1.dateCreated }
-                self.reloadData()
+                self.postsView.reloadData()
             }
         }
     }
     
     func handleMore(postId: String) {
-        SettingsLauncher.shared.delegate = self
-        SettingsLauncher.shared.showSettings(view: self.view, postId: postId)
+        PostOptionsLauncher.shared.delegate = self
+        PostOptionsLauncher.shared.showSettings(view: self.view, postId: postId)
     }
 }
 
@@ -92,6 +92,7 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
         cell.delegate = self
+        cell.optionsDelegate = self
         let post = posts[indexPath.row]
         cell.post = post
         UsersManager.shared.getUserById(post.userId) { (user) in
@@ -139,7 +140,7 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func reloadData() {
-        self.postsView.reloadData()
+        self.populatePostsTable()
     }
 }
 
@@ -155,6 +156,7 @@ extension FeedViewController: UICollectionViewDataSource, UICollectionViewDelega
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Story", for: indexPath) as! StoryViewCell
         guard let loggedUser = UsersManager.shared.loggedUser else { return cell }
         UsersManager.shared.getUserById(loggedUser.following[indexPath.row]) { (user) in
+            cell.storyProfilePictureView.image = UIImage(named: "avatar")
             cell.storyProfilePictureView.makeRounded()
             guard let url = URL(string: user.profilePicURL) else { return }
             cell.storyProfilePictureView.loadImage(from: url)
@@ -167,4 +169,6 @@ extension FeedViewController: UICollectionViewDataSource, UICollectionViewDelega
         guard let user = UsersManager.shared.loggedUser else { return }
         print("should play \(user.following[indexPath.row])'s story")
     }
+    
+    
 }

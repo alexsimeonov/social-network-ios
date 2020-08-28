@@ -16,8 +16,8 @@ final class NewsManager {
     private(set) var news = [News]()
     private(set) var image = UIImage()
     
-    func getNews(completion: @escaping () -> ()) {
-        let urlString = "https://newsapi.org/v2/top-headlines?country=us&apiKey=e3898603c0b84e69887eef5607fe27f5"
+    func getNews(forRegion region: Region, completion: @escaping () -> ()) {
+        let urlString = "https://newsapi.org/v2/top-headlines?country=\(region)&apiKey=e3898603c0b84e69887eef5607fe27f5"
         
         guard let url = URL(string: urlString) else { return }
         

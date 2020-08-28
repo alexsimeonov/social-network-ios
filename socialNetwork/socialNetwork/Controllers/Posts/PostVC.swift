@@ -46,7 +46,8 @@ class PostVC: UIViewController {
     @IBAction func likePostTapped(_ sender: UIButton) {
         guard let post = self.post else { return }
         PostsManager.shared.likePost(postId: post.id) { [weak self] (post, didFollow)  in
-            self?.configurePostView()
+            guard let self = self else { return }
+            self.configurePostView()
         }
     }
     
@@ -62,14 +63,14 @@ class PostVC: UIViewController {
         guard let post = post else { return }
         self.postTextView.text = post.content
         postTextViewHC.constant = self.postTextView.contentSize.height
+        self.likesLabel.text = "\(post.likes.count) likes"
+        self.likeButton.updateLikeImage(post: post, sender: self)
         self.authorProfilePicView.makeRounded()
         UsersManager.shared.getUserById(post.userId) { [weak self] (user) in
             guard let self = self, let url = URL(string: user.profilePicURL) else { return }
             self.authorProfilePicView.loadImage(from: url)
             self.postAuthorNameLabel.text = "\(user.firstName) \(user.lastName)"
             self.createdAtLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-            self.likesLabel.text = "\(post.likes.count) likes"
-            self.likeButton.updateLikeImage(post: post, sender: self)
         }
     }
     
@@ -104,12 +105,6 @@ class PostVC: UIViewController {
                     self.commentsViewHC.constant = newSize.height
                 }
             }
-        }
-    }
-    
-    func likePost(with id: String, completion: @escaping () -> () ) {
-        PostsManager.shared.likePost(postId: id) { (post, res) in
-            completion()
         }
     }
     

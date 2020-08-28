@@ -110,7 +110,6 @@ class UsersManager {
     
     func updateProfilePicture(pictureURL: String) {
         let userRef = Firestore.firestore().collection("users").document(AuthManager.shared.userId)
-        
         userRef.updateData([
             "profilePicURL": pictureURL
         ]) { err in

@@ -56,14 +56,19 @@ class ConnectionsViewController: UIViewController {
     
     @IBOutlet weak var connectionsSegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableViewToDisplay: UITableView!
+    @IBOutlet weak var searchFollowing: UISearchBar!
+    @IBOutlet weak var searchFollowers: UISearchBar!
     private var dataSources = [DataSource]()
     private var dataCell: ConnectionsTableViewCell?
     private var selectedUserId: String?
+    private var searchInput = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureData()
         tableViewToDisplay.delegate = self
+        searchFollowing.delegate = self
+        searchFollowers.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,8 +81,8 @@ class ConnectionsViewController: UIViewController {
         UsersManager.shared.getUserById(AuthManager.shared.userId) { [weak self] (user) in
             guard let self = self else { return }
             if self.dataSources.count >= self.connectionsSegmentedControl.numberOfSegments {
-                self.dataSources[0].data = user.following
-                self.dataSources[1].data = user.followers
+                self.dataSources[0].data = self.searchInput ? user.following.filter() { $0.lowercased().contains(self.searchFollowing.text!) } : user.following
+                self.dataSources[1].data = self.searchInput ? user.followers.filter() { $0.lowercased().contains(self.searchFollowers.text!) } : user.followers
                 self.tableViewToDisplay.reloadData()
             }
         }
@@ -106,6 +111,13 @@ class ConnectionsViewController: UIViewController {
     @objc private func handleSegmentChange(_ sender: UISegmentedControl) {
         DispatchQueue.main.async { [weak self] in
             self?.tableViewToDisplay.dataSource = self?.dataSources[sender.selectedSegmentIndex]
+            if sender.selectedSegmentIndex == 0 {
+                self?.searchFollowing.isHidden = false
+                self?.searchFollowers.isHidden = true
+            } else {
+                self?.searchFollowers.isHidden = false
+                self?.searchFollowing.isHidden = true
+            }
             self?.tableViewToDisplay.reloadData()
         }
     }
@@ -137,6 +149,18 @@ extension ConnectionsViewController: UITableViewDelegate {
             selectedUserId = user.followers[index]
         default:
             break
+        }
+    }
+}
+
+// MARK: - SerchBarDelegate
+
+extension ConnectionsViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if self.connectionsSegmentedControl.selectedSegmentIndex == 0 {
+            searchInput = searchFollowing.text!.count != 0
+        } else {
+            searchInput = searchFollowers.text!.count != 0
         }
     }
 }

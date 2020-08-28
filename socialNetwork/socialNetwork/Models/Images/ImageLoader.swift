@@ -59,11 +59,12 @@ class UIImageLoader {
     
     private init() { }
     
-    func load(from url: URL, for imageView: UIImageView) {
+    func load(from url: URL, for imageView: UIImageView, completion: @escaping () -> ()) {
         
         if let imageFromCache = imageCache.object(forKey: url as AnyObject) as? UIImage {
             DispatchQueue.main.async {
                 imageView.image = imageFromCache
+                completion()
                 return
             }
         }
@@ -74,6 +75,7 @@ class UIImageLoader {
                     let image = try result.get()
                     DispatchQueue.main.async {
                         imageView.image = image
+                        completion()
                     }
                 } catch {
                     print(error.localizedDescription)

@@ -60,10 +60,22 @@ class DiscoverViewController: UIViewController {
     @IBOutlet weak var discoverViewTable: UITableView!
     @IBOutlet weak var discoverSegmentControl: UISegmentedControl!
     @IBOutlet weak var peopleSearchBar: UISearchBar!
+    @IBOutlet weak var newsRegionPicker: UIPickerView!
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
     
     private var url: String = ""
     private var selectedUserId: String?
     private var data = [UITableViewDataSource & SegmentTitle & UITableViewDelegate]()
+    private var selectedRegion = Region.us
+    private var searchInput = false
+    private var searchedUsers = [User]()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        newsRegionPicker.dataSource = self
+        newsRegionPicker.delegate = self
+        peopleSearchBar.delegate = self
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -73,28 +85,47 @@ class DiscoverViewController: UIViewController {
     @IBAction func segmentSwitched(_ sender: UISegmentedControl) {
         discoverViewTable.dataSource = data[sender.selectedSegmentIndex]
         discoverViewTable.delegate = data[sender.selectedSegmentIndex]
-        discoverViewTable.reloadData()
+        updateView()
     }
     
     private func updateView() {
         if discoverSegmentControl.selectedSegmentIndex == 0 {
             UsersManager.shared.loadLoggedUser() { [weak self] in
-                self?.loadDataSources()
-                self?.discoverViewTable.reloadData()
+                self?.loadDataSources() {}
             }
+            newsRegionPicker.isHidden = true
+            peopleSearchBar.isHidden = false
+        } else if discoverSegmentControl.selectedSegmentIndex == 1 {
+            peopleSearchBar.isHidden = true
+            newsRegionPicker.isHidden = false
         }
+        self.discoverViewTable.reloadData()
     }
     
-    private func loadDataSources() {
+    private func loadDataSources(completion: @escaping () -> ()) {
         var users: [User]?
         var news: [News]?
         
         let completion = { [weak self] in
+            guard let self = self else { return }
             guard let users = users, let news = news else { return }
             guard let loggedUser = UsersManager.shared.loggedUser else { return }
+            guard let text = self.peopleSearchBar.text else { return }
+            
             let usersDataSource = DataSource<User, PeopleTableViewCell>(
                 title: "Users",
-                data: users.filter() { $0.id != AuthManager.shared.userId && !loggedUser.following.contains( $0.id )},
+                data: self.searchInput ? users.filter() {
+                    $0.id != AuthManager.shared.userId
+                        && !loggedUser.following.contains( $0.id )
+                        && (
+                            $0.firstName.lowercased()
+                            .contains(text.lowercased())
+                            || $0.lastName.lowercased()
+                                .contains(text.lowercased()))}
+                    : users.filter() {
+                        $0.id != AuthManager.shared.userId
+                            && !loggedUser.following.contains( $0.id )
+                },
                 configure: { (cell, item) in
                     cell.delegate = self
                     
@@ -107,9 +138,8 @@ class DiscoverViewController: UIViewController {
                     }
             },
                 selectionHandler: { (user) in
-                    print(user)
-                    self?.selectedUserId = user.id
-                    self?.performSegue(withIdentifier: "userProfile", sender: self)
+                    self.selectedUserId = user.id
+                    self.performSegue(withIdentifier: "userProfile", sender: self)
             })
             
             let newsDataSource = DataSource<News, NewsTableViewCell>(
@@ -128,17 +158,18 @@ class DiscoverViewController: UIViewController {
                     cell.titleLabel.text = item.title
                     cell.sourceLabel.text = "\(source) | \(date)"
                     cell.descriptionLabel.text = item.description
-            },
+                },
                 selectionHandler: { (new) in
                     guard let url = URL(string: new.url) else { return }
-                    self?.showSafariVC(for: url)
+                    self.showSafariVC(for: url)
             })
             
-            self?.data = [usersDataSource, newsDataSource]
+            self.data = [usersDataSource, newsDataSource]
             
             DispatchQueue.main.async {
-                self?.discoverViewTable.dataSource = usersDataSource
-                self?.discoverViewTable.reloadData()
+                self.discoverViewTable.dataSource = usersDataSource
+                self.discoverViewTable.reloadData()
+                completion()
             }
         }
         
@@ -146,7 +177,8 @@ class DiscoverViewController: UIViewController {
             users = $0
             completion()
         }
-        NewsManager.shared.getNews {
+        
+        NewsManager.shared.getNews(forRegion: selectedRegion) {
             news = NewsManager.shared.news
             completion()
         }
@@ -157,7 +189,7 @@ class DiscoverViewController: UIViewController {
         discoverSegmentControl.removeAllSegments()
     }
     
-    // MARK: - SafariVC (show browser tab through the app)
+    // MARK: - SafariVC
     
     private func showSafariVC(for url: URL) {
         let safariVC = SFSafariViewController(url: url)
@@ -196,5 +228,49 @@ extension DiscoverViewController {
         UsersManager.shared.follow(user: user) {
             self.updateView()
         }
+    }
+}
+
+// MARK: - UIPickerViewDataSource
+
+extension DiscoverViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        Region.allCases.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return Region.allCases[row].rawValue
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        indicator.center = discoverViewTable.center
+        indicator.isHidden = false
+        discoverViewTable.isHidden = true
+        indicator.startAnimating()
+        selectedRegion = Region.allCases[row]
+        loadDataSources() { [weak self] in
+            self?.updateView()
+            self?.indicator.stopAnimating()
+            self?.indicator.isHidden = true
+            self?.discoverViewTable.isHidden = false
+        }
+    }
+}
+
+// MARK: - SearchBarDataSource & SearchBarDelegate
+
+extension DiscoverViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.searchInput = searchText.count != 0
+            self?.loadDataSources {
+                self?.updateView()
+            }
+        }
+        
     }
 }

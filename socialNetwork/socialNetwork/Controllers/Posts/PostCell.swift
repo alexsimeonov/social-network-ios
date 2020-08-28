@@ -25,6 +25,7 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var moreButton: UIButton!
     
     var delegate: PostCellDelegate?
+    var optionsDelegate: PostOptionsLauncherDelegate?
     var id: String?
     var post: Post?
     
@@ -37,9 +38,8 @@ class PostCell: UITableViewCell {
     }
     
     @IBAction func moreButtonTapped(_ sender: UIButton) {
-        print("Should display additional actions")
         guard let post = self.post else { return }
-        (self.delegate as! FeedViewController).handleMore(postId: post.id)
+        self.optionsDelegate?.handleMore(postId: post.id)
     }
     
     @IBAction func likeButtonTapped(_ sender: UIButton) {

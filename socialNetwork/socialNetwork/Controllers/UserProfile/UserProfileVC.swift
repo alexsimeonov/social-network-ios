@@ -38,6 +38,10 @@ class UserProfileVC: UIViewController {
             self?.configureBackgroundPicture(user: user)
             self?.connectionsCollection.reloadData()
         }
+        self.reloadPosts(id: id)
+    }
+    
+    private func reloadPosts(id: String) {
         PostsManager.shared.getPostsById(userId: id) { [weak self] posts in
             self?.posts = posts
             self?.postsView.reloadData()
@@ -177,6 +181,7 @@ extension UserProfileVC: PostCellDelegate {
     }
     
     func reloadData() {
-        self.postsView.reloadData()
+        guard let user = user else { return }
+        self.reloadPosts(id: user.id)
     }
 }

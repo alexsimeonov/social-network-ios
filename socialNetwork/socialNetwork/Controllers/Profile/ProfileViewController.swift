@@ -228,6 +228,7 @@ extension ProfileViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
         let post = posts[indexPath.row]
         cell.delegate = self
+        cell.optionsDelegate = self
         DispatchQueue.main.async {
             cell.id = post.id
             cell.post = post
@@ -264,6 +265,13 @@ extension ProfileViewController: PostCellDelegate {
     }
     
     func reloadData() {
-        self.postsView.reloadData()
+        self.refreshActivity()
+    }
+}
+
+extension ProfileViewController: PostOptionsLauncherDelegate {
+    func handleMore(postId: String) {
+        PostOptionsLauncher.shared.delegate = self
+        PostOptionsLauncher.shared.showSettings(view: self.view, postId: postId)
     }
 }

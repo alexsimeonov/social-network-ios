@@ -10,7 +10,16 @@ import UIKit
 
 extension UIImageView {
     func loadImage(from url: URL) {
-        UIImageLoader.loader.load(from: url, for: self)
+        let indicator = UIActivityIndicatorView()
+        DispatchQueue.main.async {
+            indicator.center = self.center
+            self.addSubview(indicator)
+            indicator.startAnimating()
+        }
+        UIImageLoader.loader.load(from: url, for: self) {
+            indicator.stopAnimating()
+            indicator.isHidden = true
+        } 
     }
     
     func cancelImageLoad() {

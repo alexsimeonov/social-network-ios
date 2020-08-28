@@ -28,7 +28,6 @@ class WriteCommentVC: UIViewController {
             CommentsManager.shared.createComment(userId: user.id, postId: postId, content: commentContent.text) {
                 self.delegate?.reloadData()
                 self.navigationController?.popViewController(animated: true)
-                
             }
         }
     }
