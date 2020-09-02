@@ -75,6 +75,7 @@ class DiscoverViewController: UIViewController {
         newsRegionPicker.dataSource = self
         newsRegionPicker.delegate = self
         peopleSearchBar.delegate = self
+        newsRegionPicker.selectRow(50, inComponent: 0, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -271,6 +272,5 @@ extension DiscoverViewController: UISearchBarDelegate {
                 self?.updateView()
             }
         }
-        
     }
 }

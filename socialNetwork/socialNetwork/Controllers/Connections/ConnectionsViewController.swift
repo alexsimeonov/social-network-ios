@@ -81,8 +81,14 @@ class ConnectionsViewController: UIViewController {
         UsersManager.shared.getUserById(AuthManager.shared.userId) { [weak self] (user) in
             guard let self = self else { return }
             if self.dataSources.count >= self.connectionsSegmentedControl.numberOfSegments {
-                self.dataSources[0].data = self.searchInput ? user.following.filter() { $0.lowercased().contains(self.searchFollowing.text!) } : user.following
-                self.dataSources[1].data = self.searchInput ? user.followers.filter() { $0.lowercased().contains(self.searchFollowers.text!) } : user.followers
+                self.dataSources[0].data = self.searchInput ?
+                    user.following.filter() { $0.lowercased().contains(self.searchFollowing.text!) }
+                    : user.following
+                
+                self.dataSources[1].data = self.searchInput ?
+                    user.followers.filter() { $0.lowercased().contains(self.searchFollowers.text!) }
+                    : user.followers
+                
                 self.tableViewToDisplay.reloadData()
             }
         }

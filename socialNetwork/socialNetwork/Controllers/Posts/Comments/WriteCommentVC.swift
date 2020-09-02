@@ -56,7 +56,7 @@ extension WriteCommentVC: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text?.isEmpty != false {
-            self.commentContent.text = "Write a comment"
+            self.commentContent.text = "Write a comment..."
             self.commentContent.textColor = UIColor.lightGray
         }
     }

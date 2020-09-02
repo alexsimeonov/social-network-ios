@@ -114,7 +114,7 @@ class ProfileViewController: UIViewController {
     
     @objc private func logout() {
         AuthManager.shared.logout() {
-            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+            self.performSegue(withIdentifier: "logout", sender: nil)
         }
     }
 }

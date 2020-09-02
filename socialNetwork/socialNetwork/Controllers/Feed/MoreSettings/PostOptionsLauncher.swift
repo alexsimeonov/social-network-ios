@@ -32,7 +32,7 @@ class PostOptionsLauncher: NSObject {
     func showSettings(view: UIView, postId: String) {
         
         self.postId = postId
-        blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        blackView.backgroundColor = UIColor(white: 0, alpha: 0.7)
         
         blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
         
@@ -51,6 +51,7 @@ class PostOptionsLauncher: NSObject {
             guard let self = self else { return }
             self.blackView.alpha = 0.5
             self.menu.alpha = 1
+            self.menu.backgroundColor = UIColor(white: 1, alpha: 0)
             self.menu.frame = CGRect(
                 x: 0,
                 y: view.frame.height - 250,
@@ -78,20 +79,22 @@ class PostOptionsLauncher: NSObject {
     
     private func configureMenu() {
         let deleteButton = { () -> UIButton in
-            let btn = UIButton(frame: CGRect(x: 10, y: 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  50))
+            let btn = UIButton(frame: CGRect(x: 10, y: 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  60))
             btn.setTitle("Delete", for: .normal)
             btn.backgroundColor = .white
             btn.setTitleColor(.systemBlue, for: .normal)
             btn.addTarget(self, action: #selector(delete), for: .touchUpInside)
             btn.setImage(UIImage(systemName: "bin.xmark.fill"), for: .normal)
+            btn.layer.cornerRadius = 30
             return btn
         }()
         
         let cancelButton = { () -> UIButton in
-            let btn = UIButton(frame: CGRect(x: deleteButton.frame.minX, y: deleteButton.frame.maxY + 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  50))
+            let btn = UIButton(frame: CGRect(x: deleteButton.frame.minX, y: deleteButton.frame.maxY + 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  60))
             btn.setTitle("Cancel", for: .normal)
             btn.backgroundColor = .systemBlue
             btn.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+            btn.layer.cornerRadius = 30
             return btn
         }()
         
