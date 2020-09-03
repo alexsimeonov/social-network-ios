@@ -9,21 +9,13 @@
 import UIKit
 
 class ConnectionsTableViewCell: UITableViewCell {
-    
     @IBOutlet weak var profilePictureView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var unfollowButton: UIButton!
+    
     var delegate: ConnectionsViewController.DataSource?
     var user: User?
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
     @IBAction func unfollowButtonTapped(_ sender: UIButton) {
         guard let user = user else { return }
         self.delegate?.unfollow(user: user)

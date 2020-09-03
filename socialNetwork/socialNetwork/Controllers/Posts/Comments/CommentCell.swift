@@ -10,16 +10,14 @@ import UIKit
 
 class CommentCell: UITableViewCell, UITextViewDelegate {
 
-    @IBOutlet weak var textView: UILabel!
+    @IBOutlet private weak var textView: UILabel!
     @IBOutlet weak var profilePicView: UIImageView!
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var createdAtLabel: UILabel!
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var createdAtLabel: UILabel!
         
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
+    func configure(content: String, name: String, createdAt: String) {
+        nameLabel.text = name
+        createdAtLabel.text = createdAt
+        textView.text = content
     }
 }

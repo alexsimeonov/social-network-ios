@@ -10,7 +10,7 @@ import UIKit
 
 var imageCache = NSCache<AnyObject, AnyObject>()
 
-class ImageLoader {
+final class ImageLoader {
     private var loadedImages = [URL: UIImage]()
     private var runningRequests = [UUID: URLSessionTask]()
     
@@ -51,7 +51,7 @@ class ImageLoader {
     }
 }
 
-class UIImageLoader {
+final class UIImageLoader {
     static let loader = UIImageLoader()
     
     private let imageLoader = ImageLoader()

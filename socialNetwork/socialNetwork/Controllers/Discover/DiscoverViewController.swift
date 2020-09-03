@@ -108,14 +108,16 @@ class DiscoverViewController: UIViewController {
         var news: [News]?
         
         let completion = { [weak self] in
-            guard let self = self else { return }
+            guard let weakSelf = self else { return }
             guard let users = users, let news = news else { return }
             guard let loggedUser = UsersManager.shared.loggedUser else { return }
-            guard let text = self.peopleSearchBar.text else { return }
+            DispatchQueue.main.async {
+
+            guard let text = weakSelf.peopleSearchBar.text else { return }
             
             let usersDataSource = DataSource<User, PeopleTableViewCell>(
                 title: "Users",
-                data: self.searchInput ? users.filter() {
+                data: weakSelf.searchInput ? users.filter() {
                     $0.id != AuthManager.shared.userId
                         && !loggedUser.following.contains( $0.id )
                         && (
@@ -128,7 +130,7 @@ class DiscoverViewController: UIViewController {
                             && !loggedUser.following.contains( $0.id )
                 },
                 configure: { (cell, item) in
-                    cell.delegate = self
+                    cell.delegate = weakSelf
                     
                     DispatchQueue.main.async {
                         cell.user = item
@@ -139,15 +141,15 @@ class DiscoverViewController: UIViewController {
                     }
             },
                 selectionHandler: { (user) in
-                    self.selectedUserId = user.id
-                    self.performSegue(withIdentifier: "userProfile", sender: self)
+                    weakSelf.selectedUserId = user.id
+                    weakSelf.performSegue(withIdentifier: "userProfile", sender: weakSelf)
             })
-            
+        
             let newsDataSource = DataSource<News, NewsTableViewCell>(
                 title: "News",
                 data: news,
-                configure: { [weak self] (cell, item) in
-                    cell.delegate = self
+                configure: { (cell, item) in
+                    cell.delegate = weakSelf
                     guard let dateString = item.publishedAt,
                         let source = item.source.name,
                         let urlString = item.urlToImage,
@@ -162,15 +164,16 @@ class DiscoverViewController: UIViewController {
                 },
                 selectionHandler: { (new) in
                     guard let url = URL(string: new.url) else { return }
-                    self.showSafariVC(for: url)
+                    weakSelf.showSafariVC(for: url)
             })
             
-            self.data = [usersDataSource, newsDataSource]
+            weakSelf.data = [usersDataSource, newsDataSource]
             
             DispatchQueue.main.async {
-                self.discoverViewTable.dataSource = usersDataSource
-                self.discoverViewTable.reloadData()
+                weakSelf.discoverViewTable.dataSource = usersDataSource
+                weakSelf.discoverViewTable.reloadData()
                 completion()
+            }
             }
         }
         

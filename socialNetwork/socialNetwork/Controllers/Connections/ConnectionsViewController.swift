@@ -58,6 +58,7 @@ class ConnectionsViewController: UIViewController {
     @IBOutlet weak var tableViewToDisplay: UITableView!
     @IBOutlet weak var searchFollowing: UISearchBar!
     @IBOutlet weak var searchFollowers: UISearchBar!
+    
     private var dataSources = [DataSource]()
     private var dataCell: ConnectionsTableViewCell?
     private var selectedUserId: String?

@@ -11,9 +11,10 @@ import UIKit
 extension UIImageView {
     func loadImage(from url: URL) {
         let indicator = UIActivityIndicatorView()
-        DispatchQueue.main.async {
-            indicator.center = self.center
-            self.addSubview(indicator)
+        DispatchQueue.main.async { [weak self] in
+            guard let weakSelf = self else { return }
+            indicator.center = weakSelf.center
+            weakSelf.addSubview(indicator)
             indicator.startAnimating()
         }
         UIImageLoader.loader.load(from: url, for: self) {

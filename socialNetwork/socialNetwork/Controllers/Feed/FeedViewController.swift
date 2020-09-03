@@ -10,9 +10,9 @@ import UIKit
 import Firebase
 
 class FeedViewController: UIViewController, PostOptionsLauncherDelegate {
+    @IBOutlet private weak var postsView: UITableView!
+    @IBOutlet private weak var storiesCollectionView: UICollectionView!
     
-    @IBOutlet weak var postsView: UITableView!
-    @IBOutlet weak var storiesCollectionView: UICollectionView!
     private var posts = [Post]()
     private var selectedPost: Post?
     private let blackView = UIView()
@@ -66,11 +66,11 @@ class FeedViewController: UIViewController, PostOptionsLauncherDelegate {
         }
         
         PostsManager.shared.getLoggedUserPosts() { [weak self] (userPosts) in
-            guard let self = self else { return }
+            guard let weakSelf = self else { return }
             DispatchQueue.main.async {
-                self.posts = (self.posts + userPosts)
-                    .sorted() { $0.dateCreated > $1.dateCreated }
-                self.postsView.reloadData()
+                weakSelf.posts = (weakSelf.posts + userPosts)
+                    .sorted() { $0 > $1 }
+                weakSelf.postsView.reloadData()
             }
         }
     }
@@ -102,7 +102,7 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate {
                 cell.timeStampLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
                 cell.postContentView.text = post.content
                 cell.profilePictureView.makeRounded()
-                cell.likeButton.updateLikeImage(cell: cell)
+                cell.likeButton.updateCellLike(sender: cell)
                 cell.likesLabel.text = "\(post.likes.count) likes"
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
@@ -168,7 +168,5 @@ extension FeedViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let user = UsersManager.shared.loggedUser else { return }
         print("should play \(user.following[indexPath.row])'s story")
-    }
-    
-    
+    }   
 }

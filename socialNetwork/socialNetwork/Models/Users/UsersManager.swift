@@ -13,11 +13,11 @@ import FirebaseFirestoreSwift
 class UsersManager {
     static let shared = UsersManager()
     
-    private init() { }
-    
     private var users = [User]()
     private(set) var loggedUser: User?
     private let usersRef = Firestore.firestore().collection("users")
+    
+    private init() { }
     
     func createUser(
         firstName: String,

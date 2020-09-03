@@ -11,8 +11,8 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class AuthManager {
-    
     static let shared = AuthManager()
+
     private(set) var userId = ""
     
     private init() { }

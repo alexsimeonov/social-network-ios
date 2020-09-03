@@ -42,9 +42,15 @@ class UserProfileVC: UIViewController {
     }
     
     private func reloadPosts(id: String) {
-        PostsManager.shared.getPostsById(userId: id) { [weak self] posts in
-            self?.posts = posts
-            self?.postsView.reloadData()
+        PostsManager.shared.getPostsById(userId: id) { [weak self] (result) in
+            guard let weakSelf = self else { return }
+            switch result {
+            case .success(let posts):
+                weakSelf.posts = posts
+                weakSelf.postsView.reloadData()
+            case .failure(let error):
+                weakSelf.showAlert(title: "\(error)", message: "Try again later", sender: weakSelf)
+            }            
         }
     }
     
@@ -81,8 +87,8 @@ class UserProfileVC: UIViewController {
 
 extension UserProfileVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let user = user else { return 6 }
-        let count = user.following.count
+        guard let userUnwrapped = user else { return 6 }
+        let count = userUnwrapped.following.count
         
         return count <= 6 ? count : 6
     }
@@ -138,8 +144,7 @@ extension UserProfileVC: UICollectionViewDataSource, UICollectionViewDelegateFlo
 extension UserProfileVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let posts = posts else { return 0 }
-        return posts.count
+        posts?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -160,7 +165,7 @@ extension UserProfileVC: UITableViewDataSource {
             cell.profilePictureView.makeRounded()
             cell.postContentView.text = post.content
             cell.likesLabel.text = "\(post.likes.count) likes"
-            cell.likeButton.updateLikeImage(cell: cell)
+            cell.likeButton.updateCellLike(sender: cell)
         }
         return cell
     }
@@ -181,7 +186,7 @@ extension UserProfileVC: PostCellDelegate {
     }
     
     func reloadData() {
-        guard let user = user else { return }
-        self.reloadPosts(id: user.id)
+        guard let userUnwrapped = user else { return }
+        self.reloadPosts(id: userUnwrapped.id)
     }
 }

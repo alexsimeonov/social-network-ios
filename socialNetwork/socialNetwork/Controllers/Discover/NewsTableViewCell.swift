@@ -13,16 +13,15 @@ protocol NewsCellDelegate {
 }
 
 class NewsTableViewCell: UITableViewCell, IdentifiedCell {
+    static var identifier = "newsCell"
         
     @IBOutlet weak var newsImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var sourceLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    
-    static var identifier = "newsCell"
 
-    var delegate: NewsCellDelegate?
     private var article: News!
+    var delegate: NewsCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()

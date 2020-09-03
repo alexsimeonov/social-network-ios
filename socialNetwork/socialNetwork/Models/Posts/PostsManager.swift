@@ -13,8 +13,6 @@ import FirebaseFirestoreSwift
 class PostsManager {
     static let shared = PostsManager()
     
-    private init() { }
-    
     private let postsRef = Firestore.firestore().collection("posts")
     private let loggedUserPostsRef = Firestore.firestore().collection("posts")
         .whereField("userId", isEqualTo: AuthManager.shared.userId )
@@ -22,6 +20,8 @@ class PostsManager {
     private var loggedUserPosts = [Post]()
     private var followingPosts = [Post]()
     private var feedPosts = [Post]()
+    
+    private init() { }
     
     func createPost(
         userId: String,
@@ -45,43 +45,25 @@ class PostsManager {
         }
     }
     
-    func getPosts(completion: @escaping (_ result: [Post]) -> ()) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.postsRef.getDocuments() { (posts, error) in
-                guard let posts = posts else {
-                    guard let err = error else { return }
-                    print(err.localizedDescription)
-                    return
-                }
-                
-                do {
-                    self.posts = try posts.documents.map() {
-                        try ($0.data(as: Post.self)!)}.sorted() { $0.dateCreated > $1.dateCreated }
-                    completion(self.posts)
-                } catch {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    func getPostsById(userId: String, completion: @escaping (_ result: [Post]) -> ()) {
+    func getPostsById(userId: String, completion: @escaping (Result<[Post], NetworkError>) -> ()) {
         self.postsRef.whereField(
             "userId", isEqualTo: userId
         ).getDocuments() { (posts, error) in
-            guard let posts = posts else {
-                guard let err = error else { return }
-                print("Error getting documents: \(err.localizedDescription)")
+            guard let postsUnwrapped = posts else {
+                completion(.failure(NetworkError.NotFound))
                 return
             }
             
             do {
-                let posts = try posts.documents
-                    .map() { try ($0.data(as: Post.self)!)}.sorted() { $0.dateCreated > $1.dateCreated }
-                completion(posts)
+                let posts = try postsUnwrapped.documents
+                    .map() { try ($0.data(as: Post.self)!)}.sorted() { $0 > $1 }
+                DispatchQueue.main.async {
+                    completion(.success(posts))
+                }
             } catch {
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    completion(.failure(NetworkError.BadRequest))
+                }
             }
         }
     }
@@ -98,7 +80,7 @@ class PostsManager {
                 
                 do {
                     self.loggedUserPosts = try posts.documents
-                        .map() { try ($0.data(as: Post.self)!)}.sorted() { $0.dateCreated > $1.dateCreated }
+                        .map() { try ($0.data(as: Post.self)!)}.sorted() { $0 > $1 }
                     completion(self.loggedUserPosts)
                 } catch {
                     print(error.localizedDescription)
@@ -162,7 +144,7 @@ class PostsManager {
                 else {
                     completion()
                     return
-                }
+            }
             print(err) 
         }
     }

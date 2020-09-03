@@ -11,10 +11,10 @@ import UIKit
 final class NewsManager {
     static let shared = NewsManager()
     
-    private init() { }
-    
     private(set) var news = [News]()
     private(set) var image = UIImage()
+    
+    private init() { }
     
     func getNews(forRegion region: Region, completion: @escaping () -> ()) {
         let urlString = "https://newsapi.org/v2/top-headlines?country=\(region)&apiKey=e3898603c0b84e69887eef5607fe27f5"

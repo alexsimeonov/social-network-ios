@@ -10,9 +10,9 @@ import UIKit
 
 class WriteCommentVC: UIViewController {
     
-    @IBOutlet weak var profilePicView: UIImageView!
-    @IBOutlet weak var commentContent: UITextView!
-    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet private weak var profilePicView: UIImageView!
+    @IBOutlet private weak var commentContent: UITextView!
+    @IBOutlet private weak var nameLabel: UILabel!
     
     var postId: String?
     var delegate: PostVC?

@@ -237,7 +237,7 @@ extension ProfileViewController: UITableViewDataSource {
             cell.timeStampLabel.text = date
             cell.postContentView.text = post.content
             cell.likesLabel.text = "\(post.likes.count) likes"
-            cell.likeButton.updateLikeImage(cell: cell)
+            cell.likeButton.updateCellLike(sender: cell)
             UsersManager.shared.loadLoggedUser() {
                 guard let user = UsersManager.shared.loggedUser else { return }
                 cell.nameLabel.text = "\(user.firstName) \(user.lastName)"

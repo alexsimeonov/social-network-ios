@@ -9,23 +9,19 @@
 import UIKit
 
 extension UIButton {
-    func updateLikeImage(cell: PostCell?) {
-        let image: UIImage?
+    func updateCellLike(sender: PostCell?) {
         guard
-            let cell = cell,
-            let post = cell.post
+            let senderUnwrapped = sender,
+            let post = senderUnwrapped.post
             else { return }
-        
-        if post.likes.contains(AuthManager.shared.userId) {
-            image = UIImage(systemName: "hand.thumbsup.fill")
-        } else {
-            image = UIImage(systemName: "hand.thumbsup")
-        }
-        cell.likesLabel.text = "\(post.likes.count) likes"
-        cell.likeButton?.setImage(image, for: .normal)
+        updateImage(sender: senderUnwrapped, post: post)
     }
     
-    func updateLikeImage(post: Post, sender: PostVC) {
+    func updatePostViewLike(post: Post, sender: PostVC) {
+        updateImage(sender: sender, post: post)
+    }
+    
+    private func updateImage(sender: Any, post: Post) {
         let image: UIImage?
         
         if post.likes.contains(AuthManager.shared.userId) {
@@ -33,7 +29,7 @@ extension UIButton {
         } else {
             image = UIImage(systemName: "hand.thumbsup")
         }
-        sender.likesLabel.text = "\(post.likes.count) likes"
-        sender.likeButton?.setImage(image, for: .normal)
+        (sender as AnyObject).likesLabel.text = "\(post.likes.count) likes"
+        (sender as AnyObject).likeButton.setImage(image, for: .normal)
     }
 }

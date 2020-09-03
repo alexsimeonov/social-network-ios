@@ -12,6 +12,7 @@ import FirebaseStorage
 
 class ImagesManager {
     static let shared = ImagesManager()
+    
     private init() { }
     
     func uploadPhoto(sender: EditProfileViewController, imageView: UIImageView) {
@@ -45,7 +46,7 @@ class ImagesManager {
                 
                 dataRef.setData(data) { (error) in
                     if let err = error {
-                        AlertManager.shared.presentAlert(title: "Error", message: err.localizedDescription, sender: sender)
+                        sender.showAlert(title: "Error", message: err.localizedDescription, sender: sender)
                         return
                     }
                     

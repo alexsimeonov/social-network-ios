@@ -35,11 +35,17 @@ class PostVC: UIViewController {
         self.configurePostView()
         self.commentsView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         guard let post = self.post else { return }
-        CommentsManager.shared.getCommentsForPost(postId: post.id) { [weak self] (comments) in
-            DispatchQueue.main.async {
-                self?.comments = comments
-                self?.commentsView.reloadData()
+        CommentsManager.shared.getCommentsForPost(postId: post.id) { [weak self] (result) in
+            guard let weakSelf = self else { return }
+            
+            switch result {
+            case .success(let comments):
+                weakSelf.comments = comments
+                weakSelf.commentsView.reloadData()
+            case .failure(let error):
+                weakSelf.showAlert(title: "\(error)", message: "Try again later", sender: weakSelf)
             }
+        
         }
     }
     
@@ -64,7 +70,7 @@ class PostVC: UIViewController {
         self.postTextView.text = post.content
         postTextViewHC.constant = self.postTextView.contentSize.height
         self.likesLabel.text = "\(post.likes.count) likes"
-        self.likeButton.updateLikeImage(post: post, sender: self)
+        self.likeButton.updatePostViewLike(post: post, sender: self)
         self.authorProfilePicView.makeRounded()
         UsersManager.shared.getUserById(post.userId) { [weak self] (user) in
             guard let self = self, let url = URL(string: user.profilePicURL) else { return }
@@ -129,9 +135,7 @@ extension PostVC: UITableViewDataSource {
                 cell.profilePicView.makeRounded()
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePicView.loadImage(from: url)
-                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
-                cell.createdAtLabel.text = DateManager.shared.formatDate(currentComment.dateCreated as AnyObject)
-                cell.textView.text = currentComment.content
+                cell.configure(content: currentComment.content, name: "\(user.firstName) \(user.lastName)", createdAt: DateManager.shared.formatDate(currentComment.dateCreated as AnyObject))
             }
         }
         

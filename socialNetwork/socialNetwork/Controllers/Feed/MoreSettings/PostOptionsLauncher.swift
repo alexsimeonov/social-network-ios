@@ -13,12 +13,8 @@ protocol PostOptionsLauncherDelegate {
     func handleMore(postId: String)
 }
 
-class PostOptionsLauncher: NSObject {
+final class PostOptionsLauncher: NSObject {
     static let shared = PostOptionsLauncher()
-    
-    private override init() {
-        super.init()
-    }
     
     private let blackView = UIView()
     private let menu = { () -> UIView in
@@ -29,6 +25,10 @@ class PostOptionsLauncher: NSObject {
     var delegate: PostOptionsLauncherDelegate?
     private var postId = ""
     
+    private override init() {
+        super.init()
+    }
+
     func showSettings(view: UIView, postId: String) {
         
         self.postId = postId
@@ -48,32 +48,32 @@ class PostOptionsLauncher: NSObject {
         blackView.frame = view.frame
         
         UIView.animate(withDuration: 0.5) { [weak self] in
-            guard let self = self else { return }
-            self.blackView.alpha = 0.5
-            self.menu.alpha = 1
-            self.menu.backgroundColor = UIColor(white: 1, alpha: 0)
-            self.menu.frame = CGRect(
+            guard let weakSelf = self else { return }
+            weakSelf.blackView.alpha = 0.5
+            weakSelf.menu.alpha = 1
+            weakSelf.menu.backgroundColor = UIColor(white: 1, alpha: 0)
+            weakSelf.menu.frame = CGRect(
                 x: 0,
                 y: view.frame.height - 250,
-                width: self.menu.frame.width,
-                height: self.menu.frame.height
+                width: weakSelf.menu.frame.width,
+                height: weakSelf.menu.frame.height
             )
-            self.configureMenu()
+            weakSelf.configureMenu()
         }
     }
     
     @objc private func handleDismiss() {
         UIView.animate(withDuration: 0.5) { [weak self] in
-            guard let self = self else { return }
+            guard let weakSelf = self else { return }
             
-            self.blackView.alpha = 0
-            self.menu.frame = CGRect(
+            weakSelf.blackView.alpha = 0
+            weakSelf.menu.frame = CGRect(
                 x: 0,
-                y: self.blackView.frame.height,
-                width: self.menu.frame.width,
-                height: self.menu.frame.height
+                y: weakSelf.blackView.frame.height,
+                width: weakSelf.menu.frame.width,
+                height: weakSelf.menu.frame.height
             )
-            self.menu.alpha = 0
+            weakSelf.menu.alpha = 0
         }
     }
     

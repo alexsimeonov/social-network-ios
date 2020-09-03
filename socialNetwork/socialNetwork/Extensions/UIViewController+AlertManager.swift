@@ -1,19 +1,15 @@
 //
-//  AlertManager.swift
+//  UIViewController+AlertManager.swift
 //  socialNetwork
 //
-//  Created by Alexander Simeonov on 14.08.20.
+//  Created by Alexander Simeonov on 3.09.20.
 //  Copyright © 2020 Alexander Simeonov. All rights reserved.
 //
 
 import UIKit
 
-class AlertManager {
-    static let shared = AlertManager()
-    
-    private init() {}
-    
-    func presentAlert(
+extension UIViewController {
+    func showAlert(
         title: String,
         message: String,
         sender: UIViewController

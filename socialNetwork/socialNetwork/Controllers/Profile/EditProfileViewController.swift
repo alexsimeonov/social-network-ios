@@ -42,7 +42,7 @@ class EditProfileViewController: UIViewController {
         guard let firstName = firstNameField.text, let lastName = lastNameField.text else { return }
         delegate?.updateProfile(firstName: firstName, lastName: lastName)
         self.delegate?.refreshProfile() {
-            AlertManager.shared.presentAlert(title: "Success", message: "Profile updated successfully!", sender: self)
+            self.showAlert(title: "Success", message: "Profile updated successfully!", sender: self)
         }
     }
     

@@ -45,7 +45,7 @@ class PostCell: UITableViewCell {
     @IBAction func likeButtonTapped(_ sender: UIButton) {
         guard let post = post else { return }
         self.delegate?.likePost(with: post.id) { [weak self] (post, didFollow) in
-            self?.likeButton.updateLikeImage(cell: self)
+            self?.likeButton.updateCellLike(sender: self)
             self?.delegate?.reloadData()
         }
     }

@@ -9,7 +9,6 @@
 import UIKit
 
 class ConnectionsCollectionCell: UICollectionViewCell {
-    
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var profilePictureView: UIImageView!
 }

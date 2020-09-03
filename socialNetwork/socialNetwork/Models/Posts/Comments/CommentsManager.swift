@@ -9,11 +9,12 @@
 import Foundation
 import FirebaseFirestore
 
-class CommentsManager {
+final class CommentsManager {
+    static let shared = CommentsManager()
     
-    static var shared = CommentsManager()
-    private init() { }
     private let commentsRef = Firestore.firestore().collection("comments")
+    
+    private init() { }
     
     func createComment(
         userId: String,
@@ -39,25 +40,30 @@ class CommentsManager {
         }
     }
     
-    func getCommentsForPost(postId: String, completion: @escaping (_ result: [Comment]) -> ()) {
+    func getCommentsForPost(postId: String, completion: @escaping (Result<[Comment], Error>) -> ()) {
         DispatchQueue.main.async {
             self.commentsRef
                 .whereField("postId", isEqualTo: postId)
                 .getDocuments() { (comments, error) in
                     
-                guard let comments = comments else {
-                    guard let err = error else { return }
-                    print(err.localizedDescription)
+                guard let commentsUnwrapped = comments else {
+                    DispatchQueue.main.async {
+                        completion(.failure(NetworkError.NotFound))
+                    }
                     return
                 }
                 
                 do {
-                    let postComments = try comments.documents
+                    let postComments = try commentsUnwrapped.documents
                         .map() { try ($0.data(as: Comment.self)!) }
-                        .sorted() { $0.dateCreated < $1.dateCreated }
-                    completion(postComments)
+                        .sorted() { $0 < $1 }
+                    DispatchQueue.main.async {
+                        completion(.success(postComments))
+                    }
                 } catch {
-                    print(error.localizedDescription)
+                    DispatchQueue.main.async {
+                        completion(.failure(NetworkError.BadRequest))
+                    }
                 }
             }
         }
