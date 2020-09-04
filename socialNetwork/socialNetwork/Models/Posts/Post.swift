@@ -10,7 +10,6 @@ import Foundation
 import FirebaseFirestore
 
 struct Post: Codable {
-    
     static func > (lhs: Post, rhs: Post) -> Bool {
         lhs.dateCreated > rhs.dateCreated
     }

@@ -11,25 +11,25 @@ import FirebaseStorage
 import FirebaseFirestore
 import Kingfisher
 
-class EditProfileViewController: UIViewController {
+final class EditProfileViewController: UIViewController {
     
-    @IBOutlet weak var firstNameField: UITextField!
-    @IBOutlet weak var lastNameField: UITextField!
+    @IBOutlet private weak var firstNameField: UITextField!
+    @IBOutlet private weak var lastNameField: UITextField!
     @IBOutlet weak var profilePictureImageView: UIImageView!
     @IBOutlet weak var backgroundPictureImageView: UIImageView!
-    @IBOutlet weak var profilePicSelectButton: UIButton!
-    @IBOutlet weak var backgroundPicSelectButton: UIButton!
-    
+    @IBOutlet private weak var profilePicSelectButton: UIButton!
+    @IBOutlet private weak var backgroundPicSelectButton: UIButton!
+
+    private var lastClicked: UIButton?
     var delegate: ProfileViewController?
     var user: User?
-    private var lastClicked: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUser()
     }
     
-    @IBAction func editButtonTapped(_ sender: UIButton) {
+    @IBAction private func editButtonTapped(_ sender: UIButton) {
         if let image = profilePictureImageView.image {
             uploadPhoto(imageView: profilePictureImageView)
             delegate?.profilePictureView.image = image
@@ -46,12 +46,12 @@ class EditProfileViewController: UIViewController {
         }
     }
     
-    @IBAction func profileImagePickerButtonTapped(_ sender: UIButton) {
+    @IBAction private func profileImagePickerButtonTapped(_ sender: UIButton) {
         lastClicked = profilePicSelectButton
         showImagePickerController()
     }
     
-    @IBAction func backgroundImagePickerButtonTapped(_ sender: UIButton) {
+    @IBAction private func backgroundImagePickerButtonTapped(_ sender: UIButton) {
         lastClicked = backgroundPicSelectButton
         showImagePickerController()
     }

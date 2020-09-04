@@ -10,7 +10,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
-class AuthManager {
+final class AuthManager {
     static let shared = AuthManager()
 
     private(set) var userId = ""

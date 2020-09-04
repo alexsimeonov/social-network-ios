@@ -8,9 +8,9 @@
 
 import UIKit
 
-class ConnectionsTableViewCell: UITableViewCell {
+final class ConnectionsTableViewCell: UITableViewCell {
+    @IBOutlet private weak var nameLabel: UILabel!
     @IBOutlet weak var profilePictureView: UIImageView!
-    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var unfollowButton: UIButton!
     
     var delegate: ConnectionsViewController.DataSource?
@@ -19,5 +19,9 @@ class ConnectionsTableViewCell: UITableViewCell {
     @IBAction func unfollowButtonTapped(_ sender: UIButton) {
         guard let user = user else { return }
         self.delegate?.unfollow(user: user)
+    }
+    
+    func configure(name: String) {
+        nameLabel.text = name
     }
 }

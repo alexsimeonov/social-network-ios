@@ -8,12 +8,12 @@
 
 import UIKit
 
-class PeopleTableViewCell: UITableViewCell, IdentifiedCell {
+final class PeopleTableViewCell: UITableViewCell, IdentifiedCell {
     static var identifier = "peopleCell"
 
-    @IBOutlet weak var profilePictureView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var followButton: UIButton!
+    @IBOutlet weak var profilePictureView: UIImageView!
     
     var user: User?
     var delegate: DiscoverViewController?

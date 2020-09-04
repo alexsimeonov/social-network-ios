@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WritePostViewController: UIViewController {
+final class WritePostViewController: UIViewController {
     
     @IBOutlet private weak var nameLabel: UILabel!
     @IBOutlet private weak var profilePictureView: UIImageView!
@@ -38,7 +38,7 @@ class WritePostViewController: UIViewController {
         }
     }
     
-    @IBAction func postButtonTapped(_ sender: UIBarButtonItem) {
+    @IBAction private func postButtonTapped(_ sender: UIBarButtonItem) {
         PostsManager.shared.createPost(
             userId: AuthManager.shared.userId,
             content: postContentField.text!

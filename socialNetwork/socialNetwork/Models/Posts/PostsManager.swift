@@ -10,12 +10,10 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-class PostsManager {
+final class PostsManager {
     static let shared = PostsManager()
     
     private let postsRef = Firestore.firestore().collection("posts")
-    private let loggedUserPostsRef = Firestore.firestore().collection("posts")
-        .whereField("userId", isEqualTo: AuthManager.shared.userId )
     private var posts = [Post]()
     private var loggedUserPosts = [Post]()
     private var followingPosts = [Post]()
@@ -70,18 +68,18 @@ class PostsManager {
     
     func getLoggedUserPosts(completion: @escaping (_ result: [Post]) -> ()){
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.loggedUserPostsRef.getDocuments() { (posts, error) in
-                guard let posts = posts else {
+            guard let weakSelf = self else { return }
+            weakSelf.postsRef.whereField("userId", isEqualTo: AuthManager.shared.userId ).getDocuments() { (posts, error) in
+                guard let postsUnwrapped = posts else {
                     guard let err = error else { return }
                     print("Error getting documents: \(err.localizedDescription)")
                     return
                 }
                 
                 do {
-                    self.loggedUserPosts = try posts.documents
+                    weakSelf.loggedUserPosts = try postsUnwrapped.documents
                         .map() { try ($0.data(as: Post.self)!)}.sorted() { $0 > $1 }
-                    completion(self.loggedUserPosts)
+                    completion(weakSelf.loggedUserPosts)
                 } catch {
                     print(error.localizedDescription)
                 }
@@ -93,20 +91,20 @@ class PostsManager {
         guard let loggedUser = UsersManager.shared.loggedUser else { return }
         
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let weakSelf = self else { return }
             if loggedUser.following.count > 0 {
-                self.postsRef.whereField("userId", in: loggedUser.following)
+                weakSelf.postsRef.whereField("userId", in: loggedUser.following)
                     .getDocuments() { (results, error) in
                         
-                        guard let posts = results else {
+                        guard let postsUnwrapped = results else {
                             print(error?.localizedDescription ?? "")
                             return
                         }
                         
                         do {
-                            self.posts = try posts.documents
+                            weakSelf.posts = try postsUnwrapped.documents
                                 .map() { try $0.data(as: Post.self)! }
-                            completion(self.posts)
+                            completion(weakSelf.posts)
                         } catch {
                             print(error.localizedDescription)
                         }
@@ -118,16 +116,16 @@ class PostsManager {
     
     func likePost(postId: String, completion: @escaping(Post, Bool) -> ()) {
         postsRef.document(postId).getDocument() { [weak self] (document, error) in
-            guard let self = self else { return }
+            guard let weakSelf = self else { return }
             do {
                 guard let post = try document?.data(as: Post.self)! else { return }
                 if post.likes.contains(AuthManager.shared.userId) {
-                    self.postsRef.document(postId).updateData([
+                    weakSelf.postsRef.document(postId).updateData([
                         "likes": FieldValue.arrayRemove([AuthManager.shared.userId])
                     ])
                     completion(post, false)
                 } else {
-                    self.postsRef.document(postId).updateData([
+                    weakSelf.postsRef.document(postId).updateData([
                         "likes": FieldValue.arrayUnion([AuthManager.shared.userId])
                     ])
                     completion(post, true)
@@ -139,13 +137,13 @@ class PostsManager {
     }
     
     func deletePost(withId id: String, completion: @escaping () -> ()) {
-        postsRef.document(id).delete() { err in
-            guard let err = err
+        postsRef.document(id).delete() { error in
+            guard let errorUnwrapped = error
                 else {
                     completion()
                     return
             }
-            print(err) 
+            print(errorUnwrapped) 
         }
     }
 }

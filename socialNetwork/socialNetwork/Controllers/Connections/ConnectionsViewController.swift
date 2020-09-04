@@ -8,8 +8,8 @@
 
 import UIKit
 
-class ConnectionsViewController: UIViewController {
-    class DataSource: NSObject, UITableViewDataSource {
+final class ConnectionsViewController: UIViewController {
+    final class DataSource: NSObject, UITableViewDataSource {
         let title: String
         var data: [String]
         var delegate: ConnectionsViewController?
@@ -31,7 +31,7 @@ class ConnectionsViewController: UIViewController {
                 cell.delegate = self
                 cell.user = user
                 cell.unfollowButton.isHidden = self?.delegate?.connectionsSegmentedControl.selectedSegmentIndex == 1
-                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
+                cell.configure(name: "\(user.firstName) \(user.lastName)")
                 if user.profilePicURL == "" {
                     cell.profilePictureView.image = UIImage(named: "avatar")
                 } else {
@@ -54,10 +54,10 @@ class ConnectionsViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var connectionsSegmentedControl: UISegmentedControl!
-    @IBOutlet weak var tableViewToDisplay: UITableView!
-    @IBOutlet weak var searchFollowing: UISearchBar!
-    @IBOutlet weak var searchFollowers: UISearchBar!
+    @IBOutlet private weak var connectionsSegmentedControl: UISegmentedControl!
+    @IBOutlet private weak var tableViewToDisplay: UITableView!
+    @IBOutlet private weak var searchFollowing: UISearchBar!
+    @IBOutlet private weak var searchFollowers: UISearchBar!
     
     private var dataSources = [DataSource]()
     private var dataCell: ConnectionsTableViewCell?

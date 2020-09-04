@@ -28,11 +28,11 @@ final class PostOptionsLauncher: NSObject {
     private override init() {
         super.init()
     }
-
+    
     func showSettings(view: UIView, postId: String) {
         
         self.postId = postId
-        blackView.backgroundColor = UIColor(white: 0, alpha: 0.7)
+        blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
         
         blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
         
@@ -79,7 +79,12 @@ final class PostOptionsLauncher: NSObject {
     
     private func configureMenu() {
         let deleteButton = { () -> UIButton in
-            let btn = UIButton(frame: CGRect(x: 10, y: 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  60))
+            let btn = UIButton(
+                frame: CGRect(x: 10,
+                              y: 10,
+                              width: menu.frame.width - 20,
+                              height: (menu.frame.height / 2) -  60)
+            )
             btn.setTitle("Delete", for: .normal)
             btn.backgroundColor = .white
             btn.setTitleColor(.systemBlue, for: .normal)
@@ -90,7 +95,12 @@ final class PostOptionsLauncher: NSObject {
         }()
         
         let cancelButton = { () -> UIButton in
-            let btn = UIButton(frame: CGRect(x: deleteButton.frame.minX, y: deleteButton.frame.maxY + 10, width: menu.frame.width - 20, height: (menu.frame.height / 2) -  60))
+            let btn = UIButton(frame: CGRect(
+                x: deleteButton.frame.minX,
+                y: deleteButton.frame.maxY + 10,
+                width: menu.frame.width - 20,
+                height: (menu.frame.height / 2) -  60)
+            )
             btn.setTitle("Cancel", for: .normal)
             btn.backgroundColor = .systemBlue
             btn.addTarget(self, action: #selector(cancel), for: .touchUpInside)
@@ -102,14 +112,14 @@ final class PostOptionsLauncher: NSObject {
         self.menu.addSubview(cancelButton)
     }
     
-    @objc func delete() {
+    @objc private func delete() {
         PostsManager.shared.deletePost(withId: self.postId) {
             self.delegate?.reloadData()
             self.handleDismiss()
         }
     }
     
-    @objc func cancel() {
+    @objc private func cancel() {
         handleDismiss()
     }
 }

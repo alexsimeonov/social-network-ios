@@ -9,12 +9,11 @@
 import UIKit
 
 class UserProfileVC: UIViewController {
-    
-    @IBOutlet weak var backgroundView: UIImageView!
-    @IBOutlet weak var profileView: UIImageView!
-    @IBOutlet weak var connectionsCollection: UICollectionView!
-    @IBOutlet weak var postsView: UITableView!
-    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet private weak var backgroundView: UIImageView!
+    @IBOutlet private weak var profileView: UIImageView!
+    @IBOutlet private weak var connectionsCollection: UICollectionView!
+    @IBOutlet private weak var postsView: UITableView!
+    @IBOutlet private weak var nameLabel: UILabel!
     
     var userId: String?
     var user: User?
@@ -156,15 +155,17 @@ extension UserProfileVC: UITableViewDataSource {
             cell.id = post.id
             cell.post = post
             UsersManager.shared.getUserById(post.userId) { (user) in
-                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
+                let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
+                cell.configure(
+                    name: "\(user.firstName) \(user.lastName)",
+                    content: post.content,
+                    date: date,
+                    likes: post.likes.count
+                )
             }
-            let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-            cell.timeStampLabel.text = date
             cell.profilePictureView.makeRounded()
-            cell.postContentView.text = post.content
-            cell.likesLabel.text = "\(post.likes.count) likes"
             cell.likeButton.updateCellLike(sender: cell)
         }
         return cell

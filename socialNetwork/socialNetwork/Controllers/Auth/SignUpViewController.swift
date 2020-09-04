@@ -9,12 +9,12 @@
 import UIKit
 import FirebaseFirestore
 
-class SignUpViewController: UIViewController {
+final class SignUpViewController: UIViewController {
 
-    @IBOutlet weak var firstNameField: UITextField!
-    @IBOutlet weak var lastNameField: UITextField!
-    @IBOutlet weak var emailField: UITextField!
-    @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet private weak var firstNameField: UITextField!
+    @IBOutlet private weak var lastNameField: UITextField!
+    @IBOutlet private weak var emailField: UITextField!
+    @IBOutlet private weak var passwordField: UITextField!
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,7 @@ class SignUpViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    @IBAction func signUpTapped(_ sender: UIButton) {
+    @IBAction private func signUpTapped(_ sender: UIButton) {
         guard let firstName = firstNameField.text else { return }
         guard let lastName = lastNameField.text else { return }
         

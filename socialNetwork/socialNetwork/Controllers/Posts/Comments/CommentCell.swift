@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CommentCell: UITableViewCell, UITextViewDelegate {
+final class CommentCell: UITableViewCell, UITextViewDelegate {
 
     @IBOutlet private weak var textView: UILabel!
     @IBOutlet weak var profilePicView: UIImageView!

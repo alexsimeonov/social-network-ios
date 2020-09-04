@@ -8,6 +8,6 @@
 
 import UIKit
 
-class StoryViewCell: UICollectionViewCell {
+final class StoryViewCell: UICollectionViewCell {
     @IBOutlet weak var storyProfilePictureView: UIImageView!
 }

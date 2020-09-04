@@ -13,14 +13,14 @@ protocol EditProfileViewControllerDelegate {
     func updateProfile(firstName: String, lastName: String)
 }
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     
+    @IBOutlet private weak var postsView: UITableView!
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var activityViewHeight: NSLayoutConstraint!
+    @IBOutlet private weak var connectionsCollectionView: UICollectionView!
     @IBOutlet weak var profilePictureView: UIImageView!
     @IBOutlet weak var backgroundPictureView: UIImageView!
-    @IBOutlet weak var postsView: UITableView!
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var activityViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var connectionsCollectionView: UICollectionView!
     
     private var user: User?
     private var posts = [Post]()
@@ -49,7 +49,7 @@ class ProfileViewController: UIViewController {
         postsView.removeObserver(self, forKeyPath: "contentSize")
     }
     
-    @IBAction func editProfileButtonTapped(_ sender: UIButton) {
+    @IBAction private func editProfileButtonTapped(_ sender: UIButton) {
         performSegue(withIdentifier: "goToEditProfile", sender: self)
     }
     
@@ -234,14 +234,16 @@ extension ProfileViewController: UITableViewDataSource {
             cell.post = post
             cell.profilePictureView.makeRounded()
             let date = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-            cell.timeStampLabel.text = date
-            cell.postContentView.text = post.content
-            cell.likesLabel.text = "\(post.likes.count) likes"
             cell.likeButton.updateCellLike(sender: cell)
             UsersManager.shared.loadLoggedUser() {
-                guard let user = UsersManager.shared.loggedUser else { return }
-                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
-                guard let url = URL(string: user.profilePicURL) else { return }
+                guard let user = UsersManager.shared.loggedUser,
+                    let url = URL(string: user.profilePicURL) else { return }
+                cell.configure(
+                    name: "\(user.firstName) \(user.lastName)",
+                    content: post.content,
+                    date: date,
+                    likes: post.likes.count
+                )
                 cell.profilePictureView.loadImage(from: url)
             }
         }

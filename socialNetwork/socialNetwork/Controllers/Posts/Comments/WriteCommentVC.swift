@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WriteCommentVC: UIViewController {
+final class WriteCommentVC: UIViewController {
     
     @IBOutlet private weak var profilePicView: UIImageView!
     @IBOutlet private weak var commentContent: UITextView!
@@ -22,7 +22,7 @@ class WriteCommentVC: UIViewController {
         configureView()
     }
     
-    @IBAction func writeCommentTapped(_ sender: UIBarButtonItem) {
+    @IBAction private func writeCommentTapped(_ sender: UIBarButtonItem) {
         if commentContent.text != "Write a comment" {
             guard let user = UsersManager.shared.loggedUser, let postId = self.postId else { return }
             CommentsManager.shared.createComment(userId: user.id, postId: postId, content: commentContent.text) {

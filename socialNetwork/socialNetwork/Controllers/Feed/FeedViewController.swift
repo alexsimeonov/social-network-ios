@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class FeedViewController: UIViewController, PostOptionsLauncherDelegate {
+final class FeedViewController: UIViewController, PostOptionsLauncherDelegate {
     @IBOutlet private weak var postsView: UITableView!
     @IBOutlet private weak var storiesCollectionView: UICollectionView!
     
@@ -98,12 +98,14 @@ extension FeedViewController: UITableViewDataSource, UITableViewDelegate {
         UsersManager.shared.getUserById(post.userId) { (user) in
             DispatchQueue.main.async {
                 cell.moreButton.isHidden = user.id != AuthManager.shared.userId
-                cell.nameLabel.text = "\(user.firstName) \(user.lastName)"
-                cell.timeStampLabel.text = DateManager.shared.formatDate(post.dateCreated as AnyObject)
-                cell.postContentView.text = post.content
+                cell.configure(
+                    name: "\(user.firstName) \(user.lastName)",
+                    content: post.content,
+                    date: DateManager.shared.formatDate(post.dateCreated as AnyObject),
+                    likes: post.likes.count
+                )
                 cell.profilePictureView.makeRounded()
                 cell.likeButton.updateCellLike(sender: cell)
-                cell.likesLabel.text = "\(post.likes.count) likes"
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePictureView.loadImage(from: url)
             }

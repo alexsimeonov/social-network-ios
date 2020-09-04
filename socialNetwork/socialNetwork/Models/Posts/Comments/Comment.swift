@@ -9,7 +9,7 @@
 import Foundation
 import Firebase
 
-final class Comment: Codable {
+struct Comment: Codable {
     static func <(lhs: Comment, rhs: Comment) -> Bool {
         lhs.dateCreated < rhs.dateCreated
     }

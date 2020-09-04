@@ -14,14 +14,13 @@ protocol PostCellDelegate {
     func likePost(with id: String, completion: @escaping (Post, Bool) -> ())
 }
 
-class PostCell: UITableViewCell {
-    
-    @IBOutlet weak var profilePictureView: UIImageView!
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var postContentView: UITextView!
-    @IBOutlet weak var timeStampLabel: UILabel!
+final class PostCell: UITableViewCell {
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var postContentView: UITextView!
+    @IBOutlet private weak var timeStampLabel: UILabel!
+    @IBOutlet private weak var likesLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
-    @IBOutlet weak var likesLabel: UILabel!
+    @IBOutlet weak var profilePictureView: UIImageView!
     @IBOutlet weak var moreButton: UIButton!
     
     var delegate: PostCellDelegate?
@@ -29,20 +28,12 @@ class PostCell: UITableViewCell {
     var id: String?
     var post: Post?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
-    @IBAction func moreButtonTapped(_ sender: UIButton) {
+    @IBAction private func moreButtonTapped(_ sender: UIButton) {
         guard let post = self.post else { return }
         self.optionsDelegate?.handleMore(postId: post.id)
     }
     
-    @IBAction func likeButtonTapped(_ sender: UIButton) {
+    @IBAction private func likeButtonTapped(_ sender: UIButton) {
         guard let post = post else { return }
         self.delegate?.likePost(with: post.id) { [weak self] (post, didFollow) in
             self?.likeButton.updateCellLike(sender: self)
@@ -50,9 +41,16 @@ class PostCell: UITableViewCell {
         }
     }
     
-    @IBAction func commentButtonTapped(_ sender: UIButton) {
+    @IBAction private func commentButtonTapped(_ sender: UIButton) {
         guard let post = self.post else { return }
         self.delegate?.showComments(post: post)
+    }
+    
+    func configure(name: String, content: String, date: String, likes: Int) {
+        nameLabel.text = name
+        timeStampLabel.text = date
+        postContentView.text = content
+        likesLabel.text = "\(likes) likes"
     }
     
     override func prepareForReuse() {

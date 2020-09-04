@@ -12,35 +12,33 @@ protocol NewsCellDelegate {
     func shareArticle(url: String)
 }
 
-class NewsTableViewCell: UITableViewCell, IdentifiedCell {
+final class NewsTableViewCell: UITableViewCell, IdentifiedCell {
     static var identifier = "newsCell"
         
+    @IBOutlet private weak var titleLabel: UILabel!
+    @IBOutlet private weak var sourceLabel: UILabel!
+    @IBOutlet private weak var descriptionLabel: UILabel!
     @IBOutlet weak var newsImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var sourceLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UILabel!
-
+    
     private var article: News!
     var delegate: NewsCellDelegate?
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
+
     override func prepareForReuse() {
         newsImageView.image = nil
         newsImageView.cancelImageLoad()
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
-    @IBAction func shareButtonTapped(_ sender: UIButton) {
+    @IBAction private func shareButtonTapped(_ sender: UIButton) {
         delegate?.shareArticle(url: self.article.url)
     }
     
     func setArticle(article: News) {
         self.article = article
+    }
+    
+    func configure(title: String?, source: String?, description: String?) {
+        titleLabel.text = title
+        sourceLabel.text = source
+        descriptionLabel.text = description
     }
 }

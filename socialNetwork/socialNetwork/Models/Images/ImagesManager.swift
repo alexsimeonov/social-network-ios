@@ -10,7 +10,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseStorage
 
-class ImagesManager {
+final class ImagesManager {
     static let shared = ImagesManager()
     
     private init() { }

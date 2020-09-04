@@ -17,8 +17,8 @@ protocol IdentifiedCell {
     static var identifier: String { get set }
 }
 
-class DiscoverViewController: UIViewController {
-    class DataSource<T, Cell: UITableViewCell & IdentifiedCell>:
+final class DiscoverViewController: UIViewController {
+    final class DataSource<T, Cell: UITableViewCell & IdentifiedCell>:
         NSObject,
         UITableViewDataSource,
         UITableViewDelegate,
@@ -57,11 +57,11 @@ class DiscoverViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var discoverViewTable: UITableView!
-    @IBOutlet weak var discoverSegmentControl: UISegmentedControl!
-    @IBOutlet weak var peopleSearchBar: UISearchBar!
-    @IBOutlet weak var newsRegionPicker: UIPickerView!
-    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    @IBOutlet private weak var discoverViewTable: UITableView!
+    @IBOutlet private weak var discoverSegmentControl: UISegmentedControl!
+    @IBOutlet private weak var peopleSearchBar: UISearchBar!
+    @IBOutlet private weak var newsRegionPicker: UIPickerView!
+    @IBOutlet private weak var indicator: UIActivityIndicatorView!
     
     private var url: String = ""
     private var selectedUserId: String?
@@ -83,7 +83,7 @@ class DiscoverViewController: UIViewController {
         updateView()
     }
     
-    @IBAction func segmentSwitched(_ sender: UISegmentedControl) {
+    @IBAction private func segmentSwitched(_ sender: UISegmentedControl) {
         discoverViewTable.dataSource = data[sender.selectedSegmentIndex]
         discoverViewTable.delegate = data[sender.selectedSegmentIndex]
         updateView()
@@ -158,9 +158,7 @@ class DiscoverViewController: UIViewController {
                     let date = DateManager.shared.formatDateExtended(from: dateString)
                     cell.newsImageView.loadImage(from: url)
                     cell.setArticle(article: item)
-                    cell.titleLabel.text = item.title
-                    cell.sourceLabel.text = "\(source) | \(date)"
-                    cell.descriptionLabel.text = item.description
+                    cell.configure(title: item.title, source: "\(source) | \(date)", description: item.description)
                 },
                 selectionHandler: { (new) in
                     guard let url = URL(string: new.url) else { return }

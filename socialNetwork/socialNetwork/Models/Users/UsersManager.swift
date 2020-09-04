@@ -10,7 +10,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-class UsersManager {
+final class UsersManager {
     static let shared = UsersManager()
     
     private var users = [User]()

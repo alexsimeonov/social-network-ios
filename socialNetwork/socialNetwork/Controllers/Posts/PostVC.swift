@@ -8,17 +8,16 @@
 
 import UIKit
 
-class PostVC: UIViewController {
-    
-    @IBOutlet weak var commentsViewHC: NSLayoutConstraint!
-    @IBOutlet weak var postTextView: UITextView!
-    @IBOutlet weak var postTextViewHC: NSLayoutConstraint!
-    @IBOutlet weak var commentsView: UITableView!
-    @IBOutlet weak var postAuthorNameLabel: UILabel!
-    @IBOutlet weak var createdAtLabel: UILabel!
-    @IBOutlet weak var authorProfilePicView: UIImageView!
+final class PostVC: UIViewController {
+    @IBOutlet private weak var commentsViewHC: NSLayoutConstraint!
+    @IBOutlet private weak var postTextView: UITextView!
+    @IBOutlet private weak var postTextViewHC: NSLayoutConstraint!
+    @IBOutlet private weak var commentsView: UITableView!
+    @IBOutlet private weak var postAuthorNameLabel: UILabel!
+    @IBOutlet private weak var createdAtLabel: UILabel!
+    @IBOutlet private weak var authorProfilePicView: UIImageView!
+    @IBOutlet private weak var likeButton: UIButton!
     @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var likeButton: UIButton!
     
     var post: Post?
     var comments = [Comment]()
@@ -45,11 +44,11 @@ class PostVC: UIViewController {
             case .failure(let error):
                 weakSelf.showAlert(title: "\(error)", message: "Try again later", sender: weakSelf)
             }
-        
+            
         }
     }
     
-    @IBAction func likePostTapped(_ sender: UIButton) {
+    @IBAction private func likePostTapped(_ sender: UIButton) {
         guard let post = self.post else { return }
         PostsManager.shared.likePost(postId: post.id) { [weak self] (post, didFollow)  in
             guard let self = self else { return }
@@ -135,7 +134,11 @@ extension PostVC: UITableViewDataSource {
                 cell.profilePicView.makeRounded()
                 guard let url = URL(string: user.profilePicURL) else { return }
                 cell.profilePicView.loadImage(from: url)
-                cell.configure(content: currentComment.content, name: "\(user.firstName) \(user.lastName)", createdAt: DateManager.shared.formatDate(currentComment.dateCreated as AnyObject))
+                cell.configure(
+                    content: currentComment.content,
+                    name: "\(user.firstName) \(user.lastName)",
+                    createdAt: DateManager.shared.formatDate(currentComment.dateCreated as AnyObject)
+                )
             }
         }
         
